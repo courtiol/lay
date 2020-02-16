@@ -5,6 +5,7 @@ Authors@R: person("Romain", "Francois", role = c("aut", "cre"), email = "romain@
 Author: Romain François
 Description: lay down and chill.
 License: MIT + file LICENSE
+URL: https://github.com/romainfrancois/lay
 Suggests: 
     testthat, 
     dplyr
