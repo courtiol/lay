@@ -8,7 +8,7 @@ License: MIT + file LICENSE
 URL: https://github.com/romainfrancois/lay
 Suggests: 
     testthat (>= 2.1.0),
-    dplyr, 
+    dplyr (>= 0.8.99.9000), 
     covr
 Encoding: UTF-8
 LazyData: true
@@ -19,3 +19,5 @@ Imports:
     purrr,
     vctrs,
     tibble
+Remotes:
+    tidyverse/dplyr
