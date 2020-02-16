@@ -1,0 +1,18 @@
+Package: lay
+Title: lay down and chill
+Version: 0.0.0.9000
+Authors@R: person("Romain", "Francois", role = c("aut", "cre"), email = "romain@rstudio.com")
+Author: Romain François
+Description: lay down and chill.
+License: MIT + file LICENSE
+Suggests: 
+    testthat, 
+    dplyr
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.2
+Imports: 
+    rlang,
+    purrr,
+    vctrs
