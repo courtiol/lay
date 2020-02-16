@@ -20,4 +20,5 @@ Imports:
     vctrs,
     tibble
 Remotes:
-    tidyverse/dplyr
+    tidyverse/dplyr, 
+    tidyverse/tibble
