@@ -21,37 +21,47 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/romainfrancois/lay/workflows/R-CMD-check/badge.svg)](https://github.com/romainfrancois/lay)
 <!-- badges: end -->
 
-The goal of lay is to ...
-
 ## Installation
 
-You can install the released version of lay from [CRAN](https://CRAN.R-project.org) with:
+You can install a development version of `lay` with:
 
 ``` r
-install.packages("lay")
+# install.packages("remotes")
+remotes::install_github("romainfrancois/lay")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ```{r example}
 library(lay)
-## basic example code
+library(dplyr, warn.conflicts = FALSE)
+
+iris <- as_tibble(iris)
+
+# apply mean to each "row"
+iris %>% 
+  mutate(sepal = lay(across(starts_with("Sepal")), mean))
+
+# this is not really needed as we have base::rowMeans
+iris %>% 
+  mutate(sepal = rowMeans(across(starts_with("Sepal"))))
+
+# but then you can lay(median)
+iris %>% 
+  mutate(sepal = lay(across(starts_with("Sepal")), median))
+
+# or lay into a tibble if you want multiple results
+iris %>% 
+  mutate(sepal = lay(
+    across(starts_with("Sepal")), 
+    ~tibble(min = min(.), mean = mean(.), max = max(.))
+  ))
+
+# and if you skip `sepal =` things get auto spliced for you
+iris %>% 
+  mutate(lay(
+    across(starts_with("Sepal")), 
+    ~tibble(min = min(.), mean = mean(.), max = max(.))
+  ))
+
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
