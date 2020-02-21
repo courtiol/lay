@@ -13,6 +13,11 @@ status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/pa
 status](https://github.com/romainfrancois/lay/workflows/R-CMD-check/badge.svg)](https://github.com/romainfrancois/lay)
 <!-- badges: end -->
 
+This is one of those week end projects to reply to a tweet, nothing too
+serious but you might like it anyway, and you can buy me a coffee
+[here](https://ko-fi.com/romain) or sponsor me on my [github
+profile](https://github.com/romainfrancois).
+
 ## Installation
 
 You can install a development version of `lay` with:
