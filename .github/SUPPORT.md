@@ -29,7 +29,7 @@ For example, you'd simply remove `is:open` to search _all_ issues in the repo, o
 ## What happens next?
 
 To be as efficient as possible, development of tidyverse packages tends to be very bursty, so you shouldn't worry if you don't get an immediate response.
-Typically we don't look at a repo until a sufficient quantity of issues accumulates, then there’s a burst of intense activity as we focus our efforts. 
+Typically we don't look at a repo until a sufficient quantity of issues accumulates, then there's a burst of intense activity as we focus our efforts. 
 That makes development more efficient because it avoids expensive context switching between problems, at the cost of taking longer to get back to you. 
 This process makes a good reprex particularly important because it might be multiple months between your initial report and when we start working on it. 
-If we can’t reproduce the bug, we can’t fix it!
+If we can't reproduce the bug, we can't fix it!
