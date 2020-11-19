@@ -5,9 +5,6 @@
 #' @param ... Additional arguments for the function calls in `fn`.
 #'
 #' @examples
-#' - each row of `.data` is materialized into a vector via [vctrs::vec_c()]
-#' - `fn` is applied to that vector
-#' - All results are finally combined together with [vctrs::vec_c()]
 #'
 #'
 #' if (require("dplyr")) {
