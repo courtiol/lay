@@ -44,10 +44,9 @@
 #' }
 #'
 #' @export
-lay <- function(.data, fn) {
-  fn <- as_function(fn)
-  bits <- pmap(.data, function(...) {
-    fn(vec_c(...))
-  })
-  vec_c(!!!bits)
-}
+lay <- function(.data, .fn, ...) {
+    fn <- rlang::as_function(.fn)
+    args <- rlang::list2(...)
+    bits <- purrr::pmap(.data, function(...) rlang::exec(fn, vctrs::vec_c(...), !!!args))
+    vctrs::vec_c(!!!bits)
+  }
