@@ -21,9 +21,11 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/courtiol/lay/workflows/R-CMD-check/badge.svg)](https://github.com/courtiol/lay)
 <!-- badges: end -->
 
-This is one of those week end projects to reply to a tweet, nothing too serious but you might 
-like it anyway, and you can buy me a coffee [here](https://ko-fi.com/romain) or sponsor me 
-on my [github profile](https://github.com/romainfrancois). 
+
+## Why laying down?
+
+To come.
+
 
 ## Installation
 
@@ -31,10 +33,11 @@ You can install a development version of `lay` with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("romainfrancois/lay")
+remotes::install_github("courtiol/lay")
 ```
 
-## Example
+
+## Examples
 
 ```{r example}
 library(lay)
@@ -42,30 +45,66 @@ library(dplyr, warn.conflicts = FALSE)
 
 iris <- as_tibble(iris)
 
-# apply mean to each "row"
-iris %>% 
-  mutate(sepal = lay(across(starts_with("Sepal")), mean))
+# apply mean for each row
+iris %>%
+  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
 
-# this is not really needed as we have base::rowMeans
-iris %>% 
-  mutate(sepal = rowMeans(across(starts_with("Sepal"))))
+# not that useful because there is `rowMeans` already
+iris %>%
+  mutate(Sepal.Mean = rowMeans(across(starts_with("Sepal"))))
 
-# but then you can lay(median)
-iris %>% 
-  mutate(sepal = lay(across(starts_with("Sepal")), median))
+# but then we can lay other functions, e.g. median
+iris %>%
+  mutate(Sepal.Median = lay(across(starts_with("Sepal")), median))
 
-# or lay into a tibble if you want multiple results
-iris %>% 
-  mutate(sepal = lay(
-    across(starts_with("Sepal")), 
-    ~tibble(min = min(.), mean = mean(.), max = max(.))
+# you can pass arguments to the function
+iris_with_NA <- iris
+iris_with_NA[1, 1] <- NA
+iris_with_NA %>%
+  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
+iris_with_NA %>%
+  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean, na.rm = TRUE))
+
+# you can also lay into a tibble if you want multiple results
+iris %>%
+  mutate(Sepal.Mean = lay(
+    across(starts_with("Sepal")),
+    ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
   ))
 
-# and if you skip `sepal =` things get auto spliced for you
-iris %>% 
+# the previous example creates a df-column called `Sepal.Mean`,
+# which you could unpack with `tidyr::unpack()`, but
+# if you skip `Sepal.Mean =` things get auto spliced for you!
+iris %>%
   mutate(lay(
-    across(starts_with("Sepal")), 
-    ~tibble(min = min(.), mean = mean(.), max = max(.))
+    across(starts_with("Sepal")),
+    ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
   ))
 
+# if your function returns a vector and not a scalar,
+# just wrap it up in list (note also the use of the lambda syntax ~ fn(.x) here)
+iris %>%
+  mutate(Sepal.Quantiles = lay(across(starts_with("Sepal")), ~ list(quantile(.x))))
+
+# the previous example creates a list-column called `Sepal.Quantiles`,
+# which you could unnest with `tidyr::unnest_wider()`, but
+# you can once again rely on a tibble and skip the column name to get the output
+# auto spliced for you!
+iris %>%
+  mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
 ```
+
+
+## History
+
+<img src="https://github.com/courtiol/lay/raw/master/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
+
+This package has been created by **@romainfrancois** as a reply to one of my tweet in February 2020.
+At the time I was exploring different ways to perform rowwise jobs in data.frames and I was experimenting with various ideas on how to exploit 
+the fact that the newly developed `dplyr::across()` creates tibbles on which on can easily apply a function.
+Romain came up with `lay()` as the better solution.
+
+The verb `lay()` never made it to be integrated within {dplyr}. Yet, it remains to date an efficient solution to the old "rowwise job problem".
+This is why I decided to revive this package and to improve `lay()` a little further with Romain's help.
+
+In short, I deserve no credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois) as I do.
