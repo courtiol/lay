@@ -2,7 +2,4 @@
 
 export(lay)
 export(tibble)
-importFrom(purrr,pmap)
-importFrom(rlang,as_function)
 importFrom(tibble,tibble)
-importFrom(vctrs,vec_c)

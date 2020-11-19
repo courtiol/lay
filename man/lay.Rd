@@ -2,26 +2,23 @@
 % Please edit documentation in R/lay.R
 \name{lay}
 \alias{lay}
-\title{lay down}
+\title{Apply a function (or functions) within rows}
 \usage{
-lay(.data, fn)
+lay(.data, .fn, ...)
 }
 \arguments{
-\item{.data}{A tibble}
+\item{.data}{A data frame or data frame extension (e.g. a tibble).}
 
-\item{fn}{A function to apply to each row of \code{.data}. May also be a formula, see \code{\link[rlang:as_function]{rlang::as_function()}}.}
+\item{.fn}{A function to apply to each row of \code{.data}. May also be a formula, see \code{\link[rlang:as_function]{rlang::as_function()}}. Should return a scalar or a list.}
+
+\item{...}{Additional arguments for the function calls in \code{fn}.}
 }
 \description{
-lay down
-}
-\details{
-\itemize{
-\item each row of \code{.data} is materialized into a vector via \code{\link[vctrs:vec_c]{vctrs::vec_c()}}
-\item \code{fn} is applied to that vector
-\item All results are finally combined together with \code{\link[vctrs:vec_c]{vctrs::vec_c()}}
-}
+Apply a function (or functions) within rows
 }
 \examples{
+
+
 if (require("dplyr")) {
 
   # for printing
@@ -29,29 +26,53 @@ if (require("dplyr")) {
 
   # apply mean for each row
   iris \%>\%
-    mutate(sepal = lay(across(starts_with("Sepal")), mean))
+    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
 
   # not that useful because there is `rowMeans` already
   iris \%>\%
-    mutate(sepal = rowMeans(across(starts_with("Sepal"))))
+    mutate(Sepal.Mean = rowMeans(across(starts_with("Sepal"))))
 
   # but then we can lay other functions, e.g. median
   iris \%>\%
-    mutate(sepal = lay(across(starts_with("Sepal")), median))
+    mutate(Sepal.Median = lay(across(starts_with("Sepal")), median))
 
-  # or lay into a tibble if you want multiple results
+  # you can pass arguments to the function
+  iris_with_NA <- iris
+  iris_with_NA[1, 1] <- NA
+  iris_with_NA \%>\%
+    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
+  iris_with_NA \%>\%
+    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean, na.rm = TRUE))
+
+  # you can also lay into a tibble if you want multiple results
   iris \%>\%
-    mutate(sepal = lay(
+    mutate(Sepal.Mean = lay(
       across(starts_with("Sepal")),
-      ~tibble(min = min(.), mean = mean(.), max = max(.))
+      ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
     ))
 
-  # and if you skip `sepal =` things get auto spliced for you
+  # the previous example creates a df-column called `Sepal.Mean`,
+  # which you could unpack with `tidyr::unpack()`, but
+  # if you skip `Sepal.Mean =` things get auto spliced for you!
   iris \%>\%
     mutate(lay(
       across(starts_with("Sepal")),
-      ~tibble(min = min(.), mean = mean(.), max = max(.))
+      ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
     ))
+
+  # if your function returns a vector and not a scalar,
+  # just wrap it up in list (note also the use of the lambda syntax ~ fn(.x) here)
+  iris \%>\%
+    mutate(Sepal.Quantiles = lay(across(starts_with("Sepal")), ~ list(quantile(.x))))
+
+  # the previous example creates a list-column called `Sepal.Quantiles`,
+  # which you could unnest with `tidyr::unnest_wider()`, but
+  # you can once again rely on a tibble and skip the column name to get the output
+  # auto spliced for you!
+  if (require("tibble")) {
+    iris \%>\%
+      mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
+  }
 }
 
 }
