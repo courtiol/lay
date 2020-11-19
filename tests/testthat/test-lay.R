@@ -1,4 +1,4 @@
-test_that("multiplication works", {
+test_that("lay works", {
   df <- tibble(x = 1:10, y = 11:20, z = 21:30)
 
   expect_identical(
