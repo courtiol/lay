@@ -8,9 +8,6 @@
 #' - `fn` is applied to that vector
 #' - All results are finally combined together with [vctrs::vec_c()]
 #'
-#' @importFrom rlang as_function
-#' @importFrom vctrs vec_c
-#' @importFrom purrr pmap
 #'
 #' @examples
 #' if (require("dplyr")) {
