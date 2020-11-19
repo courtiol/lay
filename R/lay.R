@@ -1,4 +1,4 @@
-#' lay down
+#' Apply a function (or functions) within rows
 #'
 #' @param .data A data frame or data frame extension (e.g. a tibble).
 #' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
