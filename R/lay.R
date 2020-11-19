@@ -1,7 +1,8 @@
 #' lay down
 #'
-#' @param .data A tibble
-#' @param fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()].
+#' @param .data A data frame or data frame extension (e.g. a tibble).
+#' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
+#' @param ... Additional arguments for the function calls in `fn`.
 #'
 #' @details
 #' - each row of `.data` is materialized into a vector via [vctrs::vec_c()]
