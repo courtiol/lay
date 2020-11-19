@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
-[![R build status](https://github.com/romainfrancois/lay/workflows/R-CMD-check/badge.svg)](https://github.com/romainfrancois/lay)
+[![R build status](https://github.com/courtiol/lay/workflows/R-CMD-check/badge.svg)](https://github.com/courtiol/lay)
 <!-- badges: end -->
 
 This is one of those week end projects to reply to a tweet, nothing too serious but you might 
