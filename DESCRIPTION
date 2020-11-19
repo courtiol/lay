@@ -1,7 +1,10 @@
 Package: lay
 Title: lay down and chill
 Version: 0.0.0.9000
-Authors@R: person("Romain", "Francois", role = c("aut", "cre"), email = "romain@rstudio.com")
+Authors@R: c(
+    person("Alexandre", "Courtiol", role = c("aut", "cre")),
+    person("Romain", "Francois", role = c("aut")
+    )
 Author: Romain François
 Description: lay down and chill.
 License: MIT + file LICENSE
