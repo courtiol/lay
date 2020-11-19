@@ -4,6 +4,7 @@
 \name{reexports}
 \alias{reexports}
 \alias{tibble}
+\alias{as_tibble_row}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -11,6 +12,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{tibble}{\code{\link[tibble]{tibble}}}
+  \item{tibble}{\code{\link[tibble:as_tibble]{as_tibble_row}}, \code{\link[tibble]{tibble}}}
 }}
 
