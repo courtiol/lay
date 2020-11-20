@@ -6,10 +6,16 @@
 #' @param .data A data frame or data frame extension (e.g. a tibble).
 #' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
 #' @param ... Additional arguments for the function calls in `fn`.
+#' @param .method This is an experimental argument that allows you to control which internal method is used to apply the rowwise job:
+#'   - "apply", the default internally uses the function [apply()].
+#'   - "tidy", internally uses [purrr::pmap()].
+#'
+#'   The default has been chosen based on benchmarks provided in the vignette (to come).
 #'
 #' @importFrom vctrs vec_c
 #' @importFrom rlang list2 exec as_function
 #' @importFrom purrr pmap
+#'
 #' @examples
 #'
 #'
@@ -68,9 +74,14 @@
 #' }
 #'
 #' @export
-lay <- function(.data, .fn, ...) {
-    fn <- rlang::as_function(.fn)
-    args <- rlang::list2(...)
-    bits <- purrr::pmap(.data, function(...) rlang::exec(fn, vctrs::vec_c(...), !!!args))
-    vctrs::vec_c(!!!bits)
-  }
+lay <- function(.data, .fn, ..., .method = "apply") {
+    fn <- as_function(.fn)
+    if (.method == "tidy") {
+      args <- list2(...)
+      bits <- pmap(.data, function(...) exec(fn, vec_c(...), !!!args))
+    } else if (.method == "apply") {
+      bits <- apply(.data, 1, fn, ...)
+    } else stop(".method input unknown")
+    vec_c(!!!bits)
+}
+
