@@ -1,4 +1,7 @@
-#' Apply a function (or functions) within rows
+#' Apply a function (or functions) within rows.
+#'
+#' `lay()` create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
+#'  This makes it easy to create new columns based on a rowwise operation (see *Examples*, below, for illustrations).
 #'
 #' @param .data A data frame or data frame extension (e.g. a tibble).
 #' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
