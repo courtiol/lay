@@ -60,10 +60,8 @@
 #'   # which you could unnest with `tidyr::unnest_wider()`, but
 #'   # you can once again rely on a tibble and skip the column name to get the output
 #'   # auto spliced for you!
-#'   if (require("tibble")) {
-#'     iris %>%
-#'       mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
-#'   }
+#'   iris %>%
+#'     mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
 #' }
 #'
 #' @export
