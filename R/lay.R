@@ -4,6 +4,9 @@
 #' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
 #' @param ... Additional arguments for the function calls in `fn`.
 #'
+#' @importFrom vctrs vec_c
+#' @importFrom rlang list2 exec as_function
+#' @importFrom purrr pmap
 #' @examples
 #'
 #'
