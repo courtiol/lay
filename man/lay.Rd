@@ -2,9 +2,9 @@
 % Please edit documentation in R/lay.R
 \name{lay}
 \alias{lay}
-\title{Apply a function (or functions) within rows}
+\title{Apply a function (or functions) within rows.}
 \usage{
-lay(.data, .fn, ...)
+lay(.data, .fn, ..., .method = "apply")
 }
 \arguments{
 \item{.data}{A data frame or data frame extension (e.g. a tibble).}
@@ -12,9 +12,18 @@ lay(.data, .fn, ...)
 \item{.fn}{A function to apply to each row of \code{.data}. May also be a formula, see \code{\link[rlang:as_function]{rlang::as_function()}}. Should return a scalar or a list.}
 
 \item{...}{Additional arguments for the function calls in \code{fn}.}
+
+\item{.method}{This is an experimental argument that allows you to control which internal method is used to apply the rowwise job:
+\itemize{
+\item "apply", the default internally uses the function \code{\link[=apply]{apply()}}.
+\item "tidy", internally uses \code{\link[purrr:map2]{purrr::pmap()}}.
+}
+
+The default has been chosen based on benchmarks provided in the vignette (to come).}
 }
 \description{
-Apply a function (or functions) within rows
+\code{lay()} create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
+This makes it easy to create new columns based on a rowwise operation (see \emph{Examples}, below, for illustrations).
 }
 \examples{
 
@@ -69,10 +78,8 @@ if (require("dplyr")) {
   # which you could unnest with `tidyr::unnest_wider()`, but
   # you can once again rely on a tibble and skip the column name to get the output
   # auto spliced for you!
-  if (require("tibble")) {
-    iris \%>\%
-      mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
-  }
+  iris \%>\%
+    mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
 }
 
 }
