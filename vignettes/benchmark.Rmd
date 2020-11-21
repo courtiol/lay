@@ -1,0 +1,19 @@
+---
+title: "Benchmark for different rowwise alternatives"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Benchmark for different rowwise alternatives}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lay)
+```
