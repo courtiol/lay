@@ -10,9 +10,16 @@ Description: Create a vector by considering in turns each row of a data.frame or
 License: MIT + file LICENSE
 URL: https://github.com/courtiol/lay
 Suggests: 
+    bench,
+    covr,
+    dplyr (>= 1.0),
+    forcats,
+    ggplot2,
+    ggbeeswarm,
+    knitr,
+    rmarkdown,
     testthat (>= 2.1.0),
-    dplyr (>= 1.0), 
-    covr
+    tidyr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

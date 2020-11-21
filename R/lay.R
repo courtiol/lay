@@ -19,7 +19,7 @@
 #'   - "apply", the default internally uses the function [apply()].
 #'   - "tidy", internally uses [purrr::pmap()].
 #'
-#'   The default has been chosen based on benchmarks provided in the vignette (to come).
+#'   The default has been chosen based on these [**benchmarks**](../doc/benchmark.html).
 #'
 #' @importFrom vctrs vec_c
 #' @importFrom rlang list2 exec as_function
