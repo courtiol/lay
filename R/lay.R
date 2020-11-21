@@ -1,23 +1,46 @@
-#' Apply a function (or functions) within rows.
+#' Apply a function within each row.
 #'
-#' `lay()` create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
-#'  This makes the creation of new columns based on a rowwise operation both simple (see **Examples**; below) and efficient (see the vignette [**benchmarks**](../doc/benchmark.html)).
-#'  The function is fully compatible with [`{dplyr}`](dplyr::`dplyr-package`)-based workflows and follows a syntax similar to [dplyr::across()].
-#'  Yet, it takes `.data` instead of `.cols` as a main argument, which makes it possible to also use `lay()` outside `dplyr` verbs.
+#' Create efficiently new column(s) in data frame (including tibble) by applying a function one row at
+#' a time.
 #'
-#' @param .data A data frame or data frame extension (e.g. a tibble).
+#' `lay()` create a vector or a data frame (/tibble), by considering in turns each row of a data
+#' frame (`.data`) as the vector input of some function(s) `.fn`.
+#'
+#' This makes the creation of new columns based on a rowwise operation both simple (see
+#' **Examples**; below) and efficient (see the vignette [**benchmarks**](../doc/benchmark.html)).
+#'
+#' The function should be fully compatible with `{dplyr}`-based workflows and follows a syntax close
+#' to [dplyr::across()].
+#'
+#' Yet, it takes `.data` instead of `.cols` as a main argument, which makes it possible to also use
+#' `lay()` outside `dplyr` verbs (see **Examples**).
+#'
+#' The function `lay()` should work in a wide range of situations, provided that:
+#'
+#' - The input `.data` should be a data frame (including tibble) with columns of same class, or of
+#' classes similar enough to be easily coerced into a single class. Note that `.method = "apply"`
+#' also allows for the input to be a matrix and is more permissive in terms of data coercion.
+#'
+#' - The output of `.fn` should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
+#' tibble).
+#'
+#'
+#' @param .data A data frame or tibble (or other data frame extensions).
 #' @param .fn A function to apply to each row of `.data`.
 #' Possible values are:
 #'
-#'   - A function, e.g. `mean`.
-#'   - A purrr-style lambda, e.g. `~ mean(.x, na.rm = TRUE)` or
+#'   - A function, e.g. `mean`
+#'   - A purrr-style lambda, e.g. `~ mean(.x, na.rm = TRUE)`
 #'
-#'     use a tibble to apply several functions at once, e.g. `~ tibble(min = min(.x), max = max(.x))`
+#'     (wrap the output in a data frame to apply several functions at once, e.g.
+#'     `~ tibble(min = min(.x), max = max(.x))`)
 #'
 #' @param ... Additional arguments for the function calls in `fn`.
-#' @param .method This is an experimental argument that allows you to control which internal method is used to apply the rowwise job:
+#' @param .method This is an experimental argument that allows you to control which internal method
+#'   is used to apply the rowwise job:
 #'   - "apply", the default internally uses the function [apply()].
-#'   - "tidy", internally uses [purrr::pmap()].
+#'   - "tidy", internally uses [purrr::pmap()] and is stricter with respect to class coercion
+#'   across columns.
 #'
 #'   The default has been chosen based on these [**benchmarks**](../doc/benchmark.html).
 #'
@@ -32,11 +55,11 @@
 #' # lay can return a vector
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
 #'
-#' # lay can return a data.frame
+#' # lay can return a data frame
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
 #'    function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
 #'
-#' # lay can be used to augment a data.frame
+#' # lay can be used to augment a data frame
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
 #'    function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
 #'

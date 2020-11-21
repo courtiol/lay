@@ -2,37 +2,60 @@
 % Please edit documentation in R/lay.R
 \name{lay}
 \alias{lay}
-\title{Apply a function (or functions) within rows.}
+\title{Apply a function within each row.}
 \usage{
 lay(.data, .fn, ..., .method = "apply")
 }
 \arguments{
-\item{.data}{A data frame or data frame extension (e.g. a tibble).}
+\item{.data}{A data frame or tibble (or other data frame extensions).}
 
 \item{.fn}{A function to apply to each row of \code{.data}.
 Possible values are:
 \itemize{
-\item A function, e.g. \code{mean}.
-\item A purrr-style lambda, e.g. \code{~ mean(.x, na.rm = TRUE)} or
+\item A function, e.g. \code{mean}
+\item A purrr-style lambda, e.g. \code{~ mean(.x, na.rm = TRUE)}
 
-use a tibble to apply several functions at once, e.g. \code{~ tibble(min = min(.x), max = max(.x))}
+(wrap the output in a data frame to apply several functions at once, e.g.
+\code{~ tibble(min = min(.x), max = max(.x))})
 }}
 
 \item{...}{Additional arguments for the function calls in \code{fn}.}
 
-\item{.method}{This is an experimental argument that allows you to control which internal method is used to apply the rowwise job:
+\item{.method}{This is an experimental argument that allows you to control which internal method
+is used to apply the rowwise job:
 \itemize{
 \item "apply", the default internally uses the function \code{\link[=apply]{apply()}}.
-\item "tidy", internally uses \code{\link[purrr:map2]{purrr::pmap()}}.
+\item "tidy", internally uses \code{\link[purrr:map2]{purrr::pmap()}} and is stricter with respect to class coercion
+across columns.
 }
 
 The default has been chosen based on these \href{../doc/benchmark.html}{\strong{benchmarks}}.}
 }
 \description{
-\code{lay()} create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
-This makes the creation of new columns based on a rowwise operation both simple (see \strong{Examples}; below) and efficient (see the vignette \href{../doc/benchmark.html}{\strong{benchmarks}}).
-The function is fully compatible with \href{dplyr::`dplyr-package`}{\code{{dplyr}}}-based workflows and follows a syntax similar to \code{\link[dplyr:across]{dplyr::across()}}.
-Yet, it takes \code{.data} instead of \code{.cols} as a main argument, which makes it possible to also use \code{lay()} outside \code{dplyr} verbs.
+Create efficiently new column(s) in data frame (including tibble) by applying a function one row at
+a time.
+}
+\details{
+\code{lay()} create a vector or a data frame (/tibble), by considering in turns each row of a data
+frame (\code{.data}) as the vector input of some function(s) \code{.fn}.
+
+This makes the creation of new columns based on a rowwise operation both simple (see
+\strong{Examples}; below) and efficient (see the vignette \href{../doc/benchmark.html}{\strong{benchmarks}}).
+
+The function should be fully compatible with \code{{dplyr}}-based workflows and follows a syntax close
+to \code{\link[dplyr:across]{dplyr::across()}}.
+
+Yet, it takes \code{.data} instead of \code{.cols} as a main argument, which makes it possible to also use
+\code{lay()} outside \code{dplyr} verbs (see \strong{Examples}).
+
+The function \code{lay()} should work in a wide range of situations, provided that:
+\itemize{
+\item The input \code{.data} should be a data frame (including tibble) with columns of same class, or of
+classes similar enough to be easily coerced into a single class. Note that \code{.method = "apply"}
+also allows for the input to be a matrix and is more permissive in terms of data coercion.
+\item The output of \code{.fn} should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
+tibble).
+}
 }
 \examples{
 
@@ -41,11 +64,11 @@ usage without dplyr ------------------------------------------------------------
 # lay can return a vector
 lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
 
-# lay can return a data.frame
+# lay can return a data frame
 lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
    function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
 
-# lay can be used to augment a data.frame
+# lay can be used to augment a data frame
 lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
    function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
 
