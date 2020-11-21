@@ -27,10 +27,25 @@
 #'
 #' @examples
 #'
+#' usage without dplyr -------------------------------------------------------------------------
+#'
+#' # lay can return a vector
+#' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
+#'
+#' # lay can return a data.frame
+#' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
+#'    function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
+#'
+#' # lay can be used to augment a data.frame
+#' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
+#'    function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
+#'
+#'
+#' usage with dplyr ----------------------------------------------------------------------------
 #'
 #' if (require("dplyr")) {
 #'
-#'   # for printing
+#'   # for enhanced printing
 #'   iris <- as_tibble(iris)
 #'
 #'   # apply mean for each row
@@ -57,7 +72,7 @@
 #'   iris %>%
 #'     mutate(Sepal.Mean = lay(
 #'       across(starts_with("Sepal")),
-#'       ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
+#'       ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
 #'     ))
 #'
 #'   # the previous example creates a df-column called `Sepal.Mean`,
@@ -66,7 +81,7 @@
 #'   iris %>%
 #'     mutate(lay(
 #'       across(starts_with("Sepal")),
-#'       ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
+#'       ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
 #'     ))
 #'
 #'   # if your function returns a vector and not a scalar,
@@ -93,4 +108,3 @@ lay <- function(.data, .fn, ..., .method = "apply") {
     } else stop(".method input unknown")
     vec_c(!!!bits)
 }
-
