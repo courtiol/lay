@@ -50,7 +50,7 @@
 #'
 #' @examples
 #'
-#' usage without dplyr -------------------------------------------------------------------------
+#' # usage without dplyr -------------------------------------------------------------------------
 #'
 #' # lay can return a vector
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
@@ -64,7 +64,7 @@
 #'    function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
 #'
 #'
-#' usage with dplyr ----------------------------------------------------------------------------
+#' # usage with dplyr ----------------------------------------------------------------------------
 #'
 #' if (require("dplyr")) {
 #'
