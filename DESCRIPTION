@@ -3,7 +3,7 @@ Title: Yet Another Implementation of Rowwise Jobs
 Version: 0.0.0.9000
 Authors@R: c(
     person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0637-2959")),
-    person("Romain", "Francois", role = c("aut"))
+    person("Romain", "Francois", role = c("aut"), comment = c(ORCID = "0000-0002-2444-4226"))
     )
 Description: Create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
     This makes the creation of new columns based on a rowwise operation both simple and efficient.
