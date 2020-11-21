@@ -9,7 +9,14 @@ lay(.data, .fn, ..., .method = "apply")
 \arguments{
 \item{.data}{A data frame or data frame extension (e.g. a tibble).}
 
-\item{.fn}{A function to apply to each row of \code{.data}. May also be a formula, see \code{\link[rlang:as_function]{rlang::as_function()}}. Should return a scalar or a list.}
+\item{.fn}{A function to apply to each row of \code{.data}.
+Possible values are:
+\itemize{
+\item A function, e.g. \code{mean}.
+\item A purrr-style lambda, e.g. \code{~ mean(.x, na.rm = TRUE)} or
+
+use a tibble to apply several functions at once, e.g. \code{~ tibble(min = min(.x), max = max(.x))}
+}}
 
 \item{...}{Additional arguments for the function calls in \code{fn}.}
 
@@ -19,18 +26,35 @@ lay(.data, .fn, ..., .method = "apply")
 \item "tidy", internally uses \code{\link[purrr:map2]{purrr::pmap()}}.
 }
 
-The default has been chosen based on benchmarks provided in the vignette (to come).}
+The default has been chosen based on these \href{../doc/benchmark.html}{\strong{benchmarks}}.}
 }
 \description{
 \code{lay()} create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
-This makes it easy to create new columns based on a rowwise operation (see \emph{Examples}, below, for illustrations).
+This makes the creation of new columns based on a rowwise operation both simple (see \strong{Examples}; below) and efficient (see the vignette \href{../doc/benchmark.html}{\strong{benchmarks}}).
+The function is fully compatible with \href{dplyr::`dplyr-package`}{\code{{dplyr}}}-based workflows and follows a syntax similar to \code{\link[dplyr:across]{dplyr::across()}}.
+Yet, it takes \code{.data} instead of \code{.cols} as a main argument, which makes it possible to also use \code{lay()} outside \code{dplyr} verbs.
 }
 \examples{
 
+usage without dplyr -------------------------------------------------------------------------
+
+# lay can return a vector
+lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
+
+# lay can return a data.frame
+lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
+   function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
+
+# lay can be used to augment a data.frame
+lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
+   function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
+
+
+usage with dplyr ----------------------------------------------------------------------------
 
 if (require("dplyr")) {
 
-  # for printing
+  # for enhanced printing
   iris <- as_tibble(iris)
 
   # apply mean for each row
@@ -57,7 +81,7 @@ if (require("dplyr")) {
   iris \%>\%
     mutate(Sepal.Mean = lay(
       across(starts_with("Sepal")),
-      ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
+      ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
     ))
 
   # the previous example creates a df-column called `Sepal.Mean`,
@@ -66,7 +90,7 @@ if (require("dplyr")) {
   iris \%>\%
     mutate(lay(
       across(starts_with("Sepal")),
-      ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
+      ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
     ))
 
   # if your function returns a vector and not a scalar,
