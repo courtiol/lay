@@ -6,7 +6,7 @@ Authors@R: c(
     person("Romain", "Francois", role = c("aut"))
     )
 Description: Create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
-    This makes it easy to create new columns based on a rowwise operation.
+    This makes the creation of new columns based on a rowwise operation both simple and efficient.
 License: MIT + file LICENSE
 URL: https://github.com/courtiol/lay
 Suggests: 

@@ -1,10 +1,19 @@
 #' Apply a function (or functions) within rows.
 #'
 #' `lay()` create a vector by considering in turns each row of a data.frame or tibble as the vector input of some function(s).
-#'  This makes it easy to create new columns based on a rowwise operation (see *Examples*, below, for illustrations).
+#'  This makes the creation of new columns based on a rowwise operation both simple (see **Examples**; below) and efficient (see the vignette [**benchmarks**](../doc/benchmark.html)).
+#'  The function is fully compatible with [`{dplyr}`](dplyr::`dplyr-package`)-based workflows and follows a syntax similar to [dplyr::across()].
+#'  Yet, it takes `.data` instead of `.cols` as a main argument, which makes it possible to also use `lay()` outside `dplyr` verbs.
 #'
 #' @param .data A data frame or data frame extension (e.g. a tibble).
-#' @param .fn A function to apply to each row of `.data`. May also be a formula, see [rlang::as_function()]. Should return a scalar or a list.
+#' @param .fn A function to apply to each row of `.data`.
+#' Possible values are:
+#'
+#'   - A function, e.g. `mean`.
+#'   - A purrr-style lambda, e.g. `~ mean(.x, na.rm = TRUE)` or
+#'
+#'     use a tibble to apply several functions at once, e.g. `~ tibble(min = min(.x), max = max(.x))`
+#'
 #' @param ... Additional arguments for the function calls in `fn`.
 #' @param .method This is an experimental argument that allows you to control which internal method is used to apply the rowwise job:
 #'   - "apply", the default internally uses the function [apply()].
