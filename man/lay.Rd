@@ -19,7 +19,7 @@ Possible values are:
 \code{~ tibble(min = min(.x), max = max(.x))})
 }}
 
-\item{...}{Additional arguments for the function calls in \code{fn}.}
+\item{...}{Additional arguments for the function calls in \code{.fn} (must be named!).}
 
 \item{.method}{This is an experimental argument that allows you to control which internal method
 is used to apply the rowwise job:
@@ -32,11 +32,11 @@ across columns.
 The default has been chosen based on these \href{../doc/benchmark.html}{\strong{benchmarks}}.}
 }
 \description{
-Create efficiently new column(s) in data frame (including tibble) by applying a function one row at
-a time.
+Create efficiently new column(s) in data frame (including tibble) by applying a function one row
+at a time.
 }
 \details{
-\code{lay()} create a vector or a data frame (/tibble), by considering in turns each row of a data
+\code{lay()} create a vector or a data frame (or tibble), by considering in turns each row of a data
 frame (\code{.data}) as the vector input of some function(s) \code{.fn}.
 
 This makes the creation of new columns based on a rowwise operation both simple (see

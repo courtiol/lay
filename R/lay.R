@@ -1,9 +1,9 @@
 #' Apply a function within each row.
 #'
-#' Create efficiently new column(s) in data frame (including tibble) by applying a function one row at
-#' a time.
+#' Create efficiently new column(s) in data frame (including tibble) by applying a function one row
+#' at a time.
 #'
-#' `lay()` create a vector or a data frame (/tibble), by considering in turns each row of a data
+#' `lay()` create a vector or a data frame (or tibble), by considering in turns each row of a data
 #' frame (`.data`) as the vector input of some function(s) `.fn`.
 #'
 #' This makes the creation of new columns based on a rowwise operation both simple (see
@@ -35,7 +35,7 @@
 #'     (wrap the output in a data frame to apply several functions at once, e.g.
 #'     `~ tibble(min = min(.x), max = max(.x))`)
 #'
-#' @param ... Additional arguments for the function calls in `fn`.
+#' @param ... Additional arguments for the function calls in `.fn` (must be named!).
 #' @param .method This is an experimental argument that allows you to control which internal method
 #'   is used to apply the rowwise job:
 #'   - "apply", the default internally uses the function [apply()].
