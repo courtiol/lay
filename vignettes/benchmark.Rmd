@@ -1,8 +1,8 @@
 ---
-title: "Benchmarking alternative implementations of a simple rowwise job"
+title: "Benchmarking alternative implementations for a simple rowwise job"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Benchmarking alternative implementations of a simple rowwise job}
+  %\VignetteIndexEntry{Benchmarking alternative implementations for a simple rowwise job}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,12 +29,13 @@ and arithmetic operators and does allow the use of other types of functions.
 This vignette requires you to load the following packages:
 
 ```{r load_pkg, message=FALSE}
-library(dplyr)   ## for many things
-library(lay)     ## for lay() and the data
-library(tidyr)   ## for pivot_longer() and pivot_wider()
-library(purrr)   ## for pmap_lgl()
-library(bench)   ## for running the benchmark
-library(forcats) ## for sorting levels in benchmark plot with fct_reorder()
+library(dplyr)      ## for many things
+library(lay)        ## for lay() and the data
+library(tidyr)      ## for pivot_longer() and pivot_wider()
+library(purrr)      ## for pmap_lgl()
+library(data.table) ## for data.table
+library(bench)      ## for running the benchmark
+library(forcats)    ## for sorting levels in benchmark plot with fct_reorder()
 ```
 
 Please install them if they are not present on your system.
@@ -65,6 +66,8 @@ In this vignette, we will compare the efficiency of alternative ways to create a
 Let's compare the running time of different methods to do this job:
 
 ```{r bench_run1}
+drugs_dt <- data.table(drugs) ## coercion to data.table
+
 benchmark1 <- mark(
   vectorized = {
     drugs %>%
@@ -91,6 +94,9 @@ benchmark1 <- mark(
   pmap = {
     drugs %>%
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  data.table = {
+    drugs_dt[, ..I := .I]
+    drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
     drugs %>%
       mutate(everused = apply(across(-caseid), 1, any))},
@@ -123,7 +129,8 @@ Note that the scale of the plot is logarithmic.
 Let's repeat our benchmark using a smaller dataset:
 
 ```{r bench_run2}
-drugs_small <- drugs[1:100, ]
+drugs_small <- drugs[1:100, ]  ## subset dataset to 100 rows
+drugs_small_dt <- data.table(drugs_small) ## coercion to data.table
 
 benchmark2 <- mark(
   vectorized = {
@@ -151,6 +158,9 @@ benchmark2 <- mark(
   pmap = {
     drugs_small %>%
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  data.table = {
+    drugs_small_dt[, ..I := .I]
+    drugs_small_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
     drugs_small %>%
       mutate(everused = apply(across(-caseid), 1, any))},

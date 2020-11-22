@@ -11,6 +11,7 @@ URL: https://github.com/courtiol/lay
 Suggests: 
     bench,
     covr,
+    data.table,
     dplyr (>= 1.0),
     forcats,
     ggplot2,
