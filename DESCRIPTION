@@ -8,6 +8,7 @@ Authors@R: c(
 Description: create efficiently new column(s) in a data frame (including tibble) by applying a function one row at a time.
 License: MIT + file LICENSE
 URL: https://github.com/courtiol/lay
+BugReports: https://github.com/courtiol/lay/issues/
 Suggests: 
     bench,
     covr,
