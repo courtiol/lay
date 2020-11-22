@@ -122,7 +122,7 @@ benchmark1 %>%
   plot()
 ```
 
-Note that the scale of the plot is logarithmic.
+Note that the x-axis of the plot is on a logarithmic scale.
 
 ## Benchmark on smaller dataset
 
@@ -185,7 +185,7 @@ benchmark2 %>%
   plot(type = "violin")
 ```
 
-Note that the scale of the plot is logarithmic.
+Note that the x-axis of the plot is on a logarithmic scale.
 
 ## Benchmark environment
 
