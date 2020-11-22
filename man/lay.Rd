@@ -56,6 +56,11 @@ also allows for the input to be a matrix and is more permissive in terms of data
 \item The output of \code{.fn} should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
 tibble).
 }
+
+If you use \code{lay()} within \code{\link[dplyr:mutate]{dplyr::mutate()}}, make sure that the data used by \code{\link[dplyr:mutate]{dplyr::mutate()}}
+contain no row-grouping, i.e what is passed to \code{.data} in \code{\link[dplyr:mutate]{dplyr::mutate()}} should not be of
+class \code{grouped_df} or \code{rowwise_df}. If it is, \code{lay()} will be called multiple times, which will
+slow down the computation despite not influencing the output.
 }
 \examples{
 
@@ -66,11 +71,11 @@ lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
 
 # lay can return a data frame
 lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-   function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
+   ~ data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
 
 # lay can be used to augment a data frame
 lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-   function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
+   ~ cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
 
 
 # usage with dplyr ----------------------------------------------------------------------------
