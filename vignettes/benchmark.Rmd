@@ -33,6 +33,7 @@ library(dplyr)      ## for many things
 library(lay)        ## for lay() and the data
 library(tidyr)      ## for pivot_longer() and pivot_wider()
 library(purrr)      ## for pmap_lgl()
+library(slider)     ## for slide()
 library(data.table) ## for an alternative to base and dplyr
 library(bench)      ## for running the benchmark
 library(forcats)    ## for sorting levels in benchmark plot with fct_reorder()
@@ -94,6 +95,9 @@ benchmark1 <- mark(
   pmap = {
     drugs_full %>%
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  slider = {
+    drugs_full %>%
+      mutate(everused = slide_lgl(across(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
@@ -157,6 +161,9 @@ benchmark2 <- mark(
   pmap = {
     drugs %>%
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  slider = {
+    drugs %>%
+      mutate(everused = slide_lgl(across(-caseid), any))},
   data.table = {
     drugs_dt[, ..I := .I]
     drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},

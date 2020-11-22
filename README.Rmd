@@ -184,7 +184,23 @@ This is a perfectly fine solution and actually part of what one implementation o
 (if `.method = "tidy"), but from a user perspective it is a little too geeky-scary.
 
 
-### Alternative 5: **{data.table}**
+### Alternative 5: **{slider}**
+
+```{r slider}
+library(slider)   ## requires to have installed {slider}
+
+drugs %>%
+  mutate(everused = slide_lgl(across(-caseid), any))
+```
+The package [**{slider}**](https://davisvaughan.github.io/slider/) is a powerful package which provides several *sliding window* functions.
+It can be used to perform rowwise operations and is very similar to **{lay}**.
+It is very efficient but two possible drawbacks are:
+
+- you need to indicate the class of the output you want
+- I am not sure it supports the automatic splicing demonstrated above?
+
+
+### Alternative 6: **{data.table}**
 
 ```{r data.table}
 library(data.table)  ## requires to have installed {data.table}
@@ -198,7 +214,7 @@ This is a solution for those using **{data.table}**. It is not particularly effi
 easy to remember for those who do not program frequently using **{data.table}**.
 
 
-### Alternative 6: **apply()**
+### Alternative 7: **apply()**
 
 ```{r apply}
 drugs %>%
@@ -209,7 +225,7 @@ Our implementation of **lay()** strips the need of defining the margin (the `1L`
 the automatic splicing and the lambda syntax as shown above.
 
 
-### Alternative 7: **for()**
+### Alternative 8: **for()**
 
 ```{r for}
 drugs$everused <- NA
@@ -263,6 +279,9 @@ benchmark1 <- bench::mark(
   pmap = {
     drugs_full %>%
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  slider = {
+    drugs %>%
+      mutate(everused = slide_lgl(across(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
@@ -297,6 +316,6 @@ the fact that the newly introduced function **across()** from **{dplyr}** create
 Romain came up with **lay()** as the better solution making good use of **{rlang}** & **{vctrs}**.
 
 The verb **lay()** never made it to be integrated within **{dplyr}** and, so far, I still find **lay()** superior than
-other alternatives, which is why I decided to revive this package in November 2020.
+most alternatives, which is why I decided to revive this package in November 2020.
 
 In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois) as I do.

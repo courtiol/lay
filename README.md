@@ -347,7 +347,38 @@ This is a perfectly fine solution and actually part of what one
 implementation of **lay()** relies on (if \`.method = “tidy”), but from
 a user perspective it is a little too geeky-scary.
 
-### Alternative 5: **{data.table}**
+### Alternative 5: **{slider}**
+
+``` r
+library(slider)   ## requires to have installed {slider}
+
+drugs %>%
+  mutate(everused = slide_lgl(across(-caseid), any))
+#> # A tibble: 100 x 9
+#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
+#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
+#>  1 1            0       0       0       0       0       0       0 FALSE   
+#>  2 2            0       0       0       0       0       0       0 FALSE   
+#>  3 3            0       0       0       0       0       0       0 FALSE   
+#>  4 4            0       0       0       0       0       0       0 FALSE   
+#>  5 5            0       0       0       0       0       0       0 FALSE   
+#>  6 6            0       0       0       0       0       0       0 FALSE   
+#>  7 7            0       0       0       0       0       0       0 FALSE   
+#>  8 8            0       0       0       0       0       0       0 FALSE   
+#>  9 9            0       0       0       0       0       0       1 TRUE    
+#> 10 10           0       0       0       0       0       0       0 FALSE   
+#> # … with 90 more rows
+```
+
+The package [**{slider}**](https://davisvaughan.github.io/slider/) is a
+powerful package which provides several *sliding window* functions. It
+can be used to perform rowwise operations and is very similar to
+**{lay}**. It is very efficient but two possible drawbacks are:
+
+-   you need to indicate the class of the output you want
+-   I am not sure it supports the automatic splicing demonstrated above?
+
+### Alternative 6: **{data.table}**
 
 ``` r
 library(data.table)  ## requires to have installed {data.table}
@@ -370,7 +401,7 @@ This is a solution for those using **{data.table}**. It is not
 particularly efficient, nor particularly easy to remember for those who
 do not program frequently using **{data.table}**.
 
-### Alternative 6: **apply()**
+### Alternative 7: **apply()**
 
 ``` r
 drugs %>%
@@ -396,7 +427,7 @@ default method used in **lay()**. Our implementation of **lay()** strips
 the need of defining the margin (the `1L` above) and benefits from the
 automatic splicing and the lambda syntax as shown above.
 
-### Alternative 7: **for()**
+### Alternative 8: **for()**
 
 ``` r
 drugs$everused <- NA
@@ -458,7 +489,7 @@ on which on can easily apply a function. Romain came up with **lay()**
 as the better solution making good use of **{rlang}** & **{vctrs}**.
 
 The verb **lay()** never made it to be integrated within **{dplyr}**
-and, so far, I still find **lay()** superior than other alternatives,
+and, so far, I still find **lay()** superior than most alternatives,
 which is why I decided to revive this package in November 2020.
 
 In short, I deserve little credit and instead you should feel free to

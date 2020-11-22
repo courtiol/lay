@@ -19,6 +19,7 @@ Suggests:
     ggbeeswarm,
     knitr,
     rmarkdown,
+    slider,
     testthat (>= 2.1.0),
     tidyr
 Encoding: UTF-8
