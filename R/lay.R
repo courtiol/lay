@@ -123,7 +123,7 @@ lay <- function(.data, .fn, ..., .method = "apply") {
       args <- list2(...)
       bits <- pmap(.data, function(...) exec(fn, vec_c(...), !!!args))
     } else if (.method == "apply") {
-      bits <- apply(.data, 1, fn, ...)
+      bits <- apply(.data, 1L, fn, ...)
     } else stop(".method input unknown")
     vec_c(!!!bits)
 }
