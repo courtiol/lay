@@ -24,6 +24,11 @@
 #' - The output of `.fn` should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
 #' tibble).
 #'
+#' If you use `lay()` within [dplyr::mutate()], make sure that the data used by [dplyr::mutate()]
+#' contain no row-grouping, i.e what is passed to `.data` in [dplyr::mutate()] should not be of
+#' class `grouped_df` or `rowwise_df`. If it is, `lay()` will be called multiple times, which will
+#' slow down the computation despite not influencing the output.
+#'
 #'
 #' @param .data A data frame or tibble (or other data frame extensions).
 #' @param .fn A function to apply to each row of `.data`.
