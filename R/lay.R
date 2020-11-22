@@ -57,11 +57,11 @@
 #'
 #' # lay can return a data frame
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-#'    function(.x) data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
+#'    ~ data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
 #'
 #' # lay can be used to augment a data frame
 #' lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-#'    function(.x) cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
+#'    ~ cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
 #'
 #'
 #' # usage with dplyr ----------------------------------------------------------------------------
