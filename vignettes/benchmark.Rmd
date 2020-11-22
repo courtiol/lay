@@ -71,7 +71,7 @@ drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
 benchmark1 <- mark(
   vectorized = {
     drugs_full %>%
-      mutate(everused = codeine | demerol | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
+      mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
   lay = {
     drugs_full %>%
       select(-caseid) %>%
@@ -134,7 +134,7 @@ drugs_dt <- data.table(drugs) ## coercion to data.table
 benchmark2 <- mark(
   vectorized = {
     drugs %>%
-      mutate(everused = codeine | demerol | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
+      mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
   lay = {
     drugs %>%
       select(-caseid) %>%

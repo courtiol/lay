@@ -5,7 +5,7 @@
 \alias{drugs_full}
 \title{Pain relievers misuse in the US}
 \format{
-A tibble with either 100 or 55271 rows, and 9 variables:
+A tibble with either 100 or 55271 rows, and 8 variables:
 \describe{
 \item{caseid}{The identifier code of the respondent}
 \item{hydrocd}{Ever use hydrocodone nonmedically?}
@@ -14,7 +14,6 @@ A tibble with either 100 or 55271 rows, and 9 variables:
 \item{tramadl}{Ever used tramadol nonmedically?}
 \item{morphin}{Ever used morphine nonmedically?}
 \item{methdon}{Ever used methadone nonmedically?}
-\item{demerol}{Ever used demerol nonmedically?}
 \item{vicolor}{Ever used vicodin, lortab or lorcert nonmedically?}
 }
 }

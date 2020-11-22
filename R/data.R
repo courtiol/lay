@@ -8,7 +8,7 @@
 #' here but in upper case and ending with the number 2. The dataset called `drugs` contain the first
 #' 100 rows of the one called `drugs_full`.
 #'
-#' @format A tibble with either 100 or 55271 rows, and 9 variables:
+#' @format A tibble with either 100 or 55271 rows, and 8 variables:
 #' \describe{
 #'   \item{caseid}{The identifier code of the respondent}
 #'   \item{hydrocd}{Ever use hydrocodone nonmedically?}
@@ -17,7 +17,6 @@
 #'   \item{tramadl}{Ever used tramadol nonmedically?}
 #'   \item{morphin}{Ever used morphine nonmedically?}
 #'   \item{methdon}{Ever used methadone nonmedically?}
-#'   \item{demerol}{Ever used demerol nonmedically?}
 #'   \item{vicolor}{Ever used vicodin, lortab or lorcert nonmedically?}
 #' }
 #' @source \url{https://www.icpsr.umich.edu/web/NAHDAP/studies/36361}
