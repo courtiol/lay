@@ -27,6 +27,11 @@ The function has been specifically designed to be combined with
 functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel
 as if it was part of it (but you can use **lay()** without **{dplyr}**).
 
+There is hardly any code behind **lay()** (it can be coded in 3 lines),
+so this is probably just an interim solution before a proper package
+fulfils the need \[note: perhaps this package exists already… perhaps it
+is [**{slider}**](https://davisvaughan.github.io/slider/)!\].
+
 ## Installation
 
 You can install a development version of **{lay}** with:
@@ -469,6 +474,7 @@ Here are the results of a benchmark comparing alternative
 implementations for our simple rowwise job on a larger dataset with 8
 columns and 55271 rows (see vignette “benchmark” for details and more
 tests):
+
 <img src=".github/pics/README-bench_run1-1.png" width="70%" style="display: block; margin: auto;" />
 
 Note that the x-axis of the plot is on a logarithmic scale.
