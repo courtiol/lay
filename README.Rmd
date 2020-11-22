@@ -8,12 +8,13 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.path = ".github/pics/README-",
+  out.width = "70%",
+  fig.align = "center"
 )
 ```
 
-# lay
+# **{lay}** -- an R package for simple but efficient rowwise jobs
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -22,14 +23,21 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 
-## Why laying down?
+## Why **{lay}**?
 
-To come.
+Doing rowwise operation is notoriously awkward in R.
+
+Many options have been proposed, but they tend to be complicated, inefficient, or both.
+
+Instead **lay()** -- the only function of the package **{lay}** -- aims at reaching a sweet spot between simplicity and efficiency.
+
+The function has been specifically designed to be combined with functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel as if 
+it was part of it (but you can use **lay()** without **{dplyr}**).
 
 
 ## Installation
 
-You can install a development version of `lay` with:
+You can install a development version of **{lay}** with:
 
 ``` r
 # install.packages("remotes")
@@ -37,74 +45,258 @@ remotes::install_github("courtiol/lay")
 ```
 
 
-## Examples
+## Motivation
 
-```{r example}
-library(lay)
-library(dplyr, warn.conflicts = FALSE)
-
-iris <- as_tibble(iris)
-
-# apply mean for each row
-iris %>%
-  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
-
-# not that useful because there is `rowMeans` already
-iris %>%
-  mutate(Sepal.Mean = rowMeans(across(starts_with("Sepal"))))
-
-# but then we can lay other functions, e.g. median
-iris %>%
-  mutate(Sepal.Median = lay(across(starts_with("Sepal")), median))
-
-# you can pass arguments to the function
-iris_with_NA <- iris
-iris_with_NA[1, 1] <- NA
-iris_with_NA %>%
-  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
-iris_with_NA %>%
-  mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean, na.rm = TRUE))
-
-# you can also lay into a tibble if you want multiple results
-iris %>%
-  mutate(Sepal.Mean = lay(
-    across(starts_with("Sepal")),
-    ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
-  ))
-
-# the previous example creates a df-column called `Sepal.Mean`,
-# which you could unpack with `tidyr::unpack()`, but
-# if you skip `Sepal.Mean =` things get auto spliced for you!
-iris %>%
-  mutate(lay(
-    across(starts_with("Sepal")),
-    ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))
-  ))
-
-# if your function returns a vector and not a scalar,
-# just wrap it up in list (note also the use of the lambda syntax ~ fn(.x) here)
-iris %>%
-  mutate(Sepal.Quantiles = lay(across(starts_with("Sepal")), ~ list(quantile(.x))))
-
-# the previous example creates a list-column called `Sepal.Quantiles`,
-# which you could unnest with `tidyr::unnest_wider()`, but
-# you can once again rely on a tibble and skip the column name to get the output
-# auto spliced for you!
-iris %>%
-  mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
+Consider the following dataset, which contains information about the use of pain relievers for non medical purpose.
+```{r motivation}
+library(lay)  ## requires to have installed {lay}
+drugs
 ```
+
+The dataset is [tidy](https://vita.had.co.nz/papers/tidy-data.pdf): each row represents one individual and each variable forms a column.
+
+Imagine now that you would like to know if each individual did use any of these pain relievers.
+
+How would you proceed?
+
+
+## Our solution: **lay()**
+
+This is how you would achieve our goal using **lay()**:
+```{r lay}
+library(dplyr, warn.conflicts = FALSE)  ## requires to have installed {dplyr}
+
+drugs_full %>%
+  mutate(everused = lay(across(-caseid), any))
+```
+
+We used **mutate()** from **{dplyr}** to create a new column called *everused*, and we use **across()** from that same package to remove the column *caseid* when laying down each row of the data and applying the function **any()**.
+
+When combining **lay()** and **{dplyr}**, you should always use **across()**. The function **across()** lets you pick among many [selection helpers](https://tidyselect.r-lib.org/reference/language.html) from the package **{tidyselect}**, which makes it easy to specify which columns to consider.
+
+Our function **lay()** is quite flexible! For example, you can pass argument(s) of the function you wish to apply rowwise (here **any()**):
+
+```{r NA}
+drugs_with_NA <- drugs     ## create a copy of the dataset
+drugs_with_NA[1, 2] <- NA  ## introduce a missing value
+
+drugs_with_NA %>%
+  mutate(everused = lay(across(-caseid), any)) %>% ## without additional argument
+  slice(1)  ## keep first row only
+  
+drugs_with_NA %>%
+  mutate(everused = lay(across(-caseid), any, na.rm = TRUE)) %>%  ## with additional argument
+  slice(1)
+```
+
+Since one of the backbones of **lay()** is  [**{rlang}**](https://rlang.r-lib.org), you can use the so-called [*lambda* syntax](https://rlang.r-lib.org/reference/as_function.html) to define anonymous functions on the fly:
+
+```{r lambda}
+drugs_with_NA %>%
+ mutate(everused = lay(across(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
+```
+
+We can also apply many functions at once, as exemplified with another dataset:
+
+```{r worldbank}
+data("world_bank_pop", package = "tidyr")  ## requires to have installed {tidyr}
+
+world_bank_pop %>%
+  filter(indicator == "SP.POP.TOTL") %>%
+  mutate(lay(across(matches("\\d")),
+             ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))), .after = indicator)
+```
+
+Since the other backbone of **lay()** is [**{vctrs}**](https://vctrs.r-lib.org), the splicing happens automatically (unless the output of the call is used to create a named column). This is why, in the last chunk of code, three different columns (*min*, *mean* and *max*) where directly created.
+
+**Important:** when using **lay()** the function you want to use for the rowwise job must output a scalar (vector of length 1), or a tibble or data frame with a single row.
+
+We can apply a function that returns a vector of length > 1 by turning such vector into a tibble using **as_tibble_row()** from [**{tibble}**](https://tibble.tidyverse.org/):
+
+```{r worldbank2}
+world_bank_pop %>%
+  filter(indicator == "SP.POP.TOTL") %>%
+  mutate(lay(across(matches("\\d")),
+             ~ as_tibble_row(quantile(.x, na.rm = TRUE))), .after = indicator)
+```
+
+
+## Alternatives to **lay()**
+
+Of course, there are many alternatives to perform rowwise jobs.
+
+Let's now consider, in turns, these alternatives -- sticking to our example about drugs usage.
+
+
+### Alternative 1: vectorized solution
+
+One solution is to simply do the following:
+```{r vector}
+drugs_full %>%
+  mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)
+```
+It is certainly very efficient from a computational point of view, but coding this way presents two main limitations:
+
+  - you need to name all columns explicitly, which can be problematic when dealing with many columns
+  - you are stuck with expressing your task with logical and arithmetic operators, which is not always sufficient
+
+  
+### Alternative 2: 100% **{dplyr}**
+
+```{r dplyr}
+drugs%>%
+  rowwise() %>%
+  mutate(everused = any(c_across(-caseid))) %>%
+  ungroup()
+```
+It is easy to use as **c_across()** turns its input into a vector and **rowwise()** implies that the
+vector only represents one row at a time. Yet, for now it remains quite slow on large datasets (see **Efficiency** below).
+
+
+### Alternative 3: **{tidyr}**
+
+```{r, }
+library(tidyr)  ## requires to have installed {tidyr}
+
+drugs %>%
+  pivot_longer(-caseid) %>%
+  group_by(caseid) %>%
+  mutate(everused = any(value)) %>%
+  ungroup() %>%
+  pivot_wider() %>%
+  relocate(everused, .after = last_col())
+```
+Here the trick is to turn the rowwise problem into a column problem by pivoting the values and then
+pivoting the results back. Many find that this involves a little too much intellectual gymnastic. It
+is also not particularly efficient on large dataset both in terms of computation time and memory required
+to pivot the tables.
+
+
+### Alternative 4: **{purrr}**
+
+```{r purrr}
+library(purrr)  ## requires to have installed {purrr}
+
+drugs %>%
+  mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))
+```
+This is a perfectly fine solution and actually part of what one implementation of **lay()** relies on
+(if `.method = "tidy"), but from a user perspective it is a little too geeky-scary.
+
+
+### Alternative 5: **{data.table}**
+
+```{r data.table}
+library(data.table)  ## requires to have installed {data.table}
+
+drugs_dt <- data.table(drugs)
+
+drugs_dt[, ..I := .I]
+  drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
+```
+This is a solution for those using **{data.table}**. It is not particularly efficient, nor particularly
+easy to remember for those who do not program frequently using **{data.table}**.
+
+
+### Alternative 6: **apply()**
+
+```{r apply}
+drugs %>%
+  mutate(everused = apply(across(-caseid), 1L, any))
+```
+This is the base R solution. Very efficient and actually part of the default method used in **lay()**.
+Our implementation of **lay()** strips the need of defining the margin (the `1L` above) and benefits from
+the automatic splicing and the lambda syntax as shown above.
+
+
+### Alternative 7: **for()**
+
+```{r for}
+drugs$everused <- NA
+
+columns_in <- !colnames(drugs) %in% c("caseid", "everused")
+
+for (i in seq_len(nrow(drugs))) {
+  drugs$everused[i] <- any(drugs[i, columns_in])
+}
+
+drugs
+```
+This is another base R solution, which does not involve any external package. It is not very pretty,
+nor particularly efficient.
+
+
+### Other alternatives?
+
+There are probably other ways. If you think of a nice one, please leave an issue!
+
+
+## Efficiency
+
+Here are the results of a benchmark comparing alternative implementations for our simple rowwise job on
+a larger dataset with `r ncol(drugs_full)` columns and `r nrow(drugs_full)` rows (see vignette "benchmark" for details and more tests):
+```{r bench_run1, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=5}
+rm(drugs)
+
+drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
+
+benchmark1 <- bench::mark(
+  vectorized = {
+    drugs_full %>%
+      mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
+  lay = {
+    drugs_full %>%
+      select(-caseid) %>%
+      mutate(everused = lay(., any))},
+  c_across = {
+    drugs_full %>%
+      rowwise() %>%
+      mutate(everused = any(c_across(-caseid))) %>%
+      ungroup()},
+  pivot_pivot = {
+    drugs_full %>%
+      pivot_longer(-caseid) %>%
+      group_by(caseid) %>%
+      mutate(everused = any(value)) %>%
+      ungroup() %>%
+      pivot_wider()},
+  pmap = {
+    drugs_full %>%
+      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  data.table = {
+    drugs_full_dt[, ..I := .I]
+    drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
+  apply = {
+    drugs_full %>%
+      mutate(everused = apply(across(-caseid), 1, any))},
+  'for' = {
+    everused <- logical(nrow(drugs_full))
+    columns_in <- colnames(drugs_full) != "caseid"
+    for (i in seq_len(nrow(drugs_full))) everused[i] <- any(drugs_full[i, columns_in])},
+  iterations = 5,
+  time_unit = "ms",
+  check = FALSE
+  )
+benchmark1 %>%
+  mutate(expression = forcats::fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
+  plot()
+```
+
+Note that the x-axis of the plot is on a logarithmic scale.
+
+As you can see, **lay()** is not just simple and powerful, it is also quite efficient!
 
 
 ## History
 
 <img src="https://github.com/courtiol/lay/raw/master/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
-This package has been created by **@romainfrancois** as a reply to one of my tweet in February 2020.
-At the time I was exploring different ways to perform rowwise jobs in data.frames and I was experimenting with various ideas on how to exploit 
-the fact that the newly developed `dplyr::across()` creates tibbles on which on can easily apply a function.
-Romain came up with `lay()` as the better solution.
+This package has been created by **@romainfrancois** as a reply to a tweet I posted under **@rdataberlin** in February 2020.
+At the time I was exploring different ways to perform rowwise jobs in R and I was experimenting with various ideas on how to exploit 
+the fact that the newly introduced function **across()** from **{dplyr}** creates tibbles on which on can easily apply a function.
+Romain came up with **lay()** as the better solution making good use of **{rlang}** & **{vctrs}**.
 
-The verb `lay()` never made it to be integrated within {dplyr}. Yet, it remains to date an efficient solution to the old "rowwise job problem".
-This is why I decided to revive this package and to improve `lay()` a little further with Romain's help.
+The verb **lay()** never made it to be integrated within **{dplyr}** and, so far, I still find **lay()** superior than
+other alternatives, which is why I decided to revive this package in November 2020.
 
-In short, I deserve no credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois) as I do.
+In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois) as I do.
