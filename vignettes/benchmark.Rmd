@@ -33,7 +33,7 @@ library(dplyr)      ## for many things
 library(lay)        ## for lay() and the data
 library(tidyr)      ## for pivot_longer() and pivot_wider()
 library(purrr)      ## for pmap_lgl()
-library(data.table) ## for data.table
+library(data.table) ## for an alternative to base and dplyr
 library(bench)      ## for running the benchmark
 library(forcats)    ## for sorting levels in benchmark plot with fct_reorder()
 ```
@@ -43,16 +43,16 @@ Please install them if they are not present on your system.
 
 ## An example of a rowwise task
 
-Consider the dataset `drugs` from our package {lay}:
-```{r drugs}
-drugs
+Consider the dataset `drugs_full` from our package {lay}:
+```{r drugs_full}
+drugs_full
 ```
 
 In this dataset, all columns but `caseid` record the use of pain relievers for non medical purpose.
 
 For each drug there is a certain number of users and non-users:
-```{r drugs_summary}
-drugs %>%
+```{r drugs_full_summary}
+drugs_full %>%
   pivot_longer(-caseid, names_to = "drug", values_to = "used") %>%
   count(drug, used) %>%
   mutate(used = if_else(used == 1, "have_used", "have_not_used")) %>%
@@ -66,9 +66,72 @@ In this vignette, we will compare the efficiency of alternative ways to create a
 Let's compare the running time of different methods to do this job:
 
 ```{r bench_run1}
-drugs_dt <- data.table(drugs) ## coercion to data.table
+drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
 
 benchmark1 <- mark(
+  vectorized = {
+    drugs_full %>%
+      mutate(everused = codeine | demerol | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
+  lay = {
+    drugs_full %>%
+      select(-caseid) %>%
+      mutate(everused = lay(., any))},
+  lay_alternative = {
+    drugs_full %>%
+      mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
+  c_across = {
+    drugs_full %>%
+      rowwise() %>%
+      mutate(everused = any(c_across(-caseid))) %>%
+      ungroup()},
+  pivot_pivot = {
+    drugs_full %>%
+      pivot_longer(-caseid) %>%
+      group_by(caseid) %>%
+      mutate(everused = any(value)) %>%
+      ungroup() %>%
+      pivot_wider()},
+  pmap = {
+    drugs_full %>%
+      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+  data.table = {
+    drugs_full_dt[, ..I := .I]
+    drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
+  apply = {
+    drugs_full %>%
+      mutate(everused = apply(across(-caseid), 1, any))},
+  'for' = {
+    everused <- logical(nrow(drugs_full))
+    columns_in <- colnames(drugs_full) != "caseid"
+    for (i in seq_len(nrow(drugs_full))) everused[i] <- any(drugs_full[i, columns_in])},
+  iterations = 5,
+  time_unit = "ms",
+  check = FALSE
+  )
+```
+
+Here are the results of this first benchmark:
+```{r bench_results1}
+benchmark1 %>%
+  arrange(median)
+```
+
+```{r bench_plot1, fig.width=7}
+benchmark1 %>%
+  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
+  plot()
+```
+
+Note that the scale of the plot is logarithmic.
+
+## Benchmark on smaller dataset
+
+Let's repeat our benchmark using a smaller dataset:
+
+```{r bench_run2}
+drugs_dt <- data.table(drugs) ## coercion to data.table
+
+benchmark2 <- mark(
   vectorized = {
     drugs %>%
       mutate(everused = codeine | demerol | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
@@ -104,70 +167,6 @@ benchmark1 <- mark(
     everused <- logical(nrow(drugs))
     columns_in <- colnames(drugs) != "caseid"
     for (i in seq_len(nrow(drugs))) everused[i] <- any(drugs[i, columns_in])},
-  iterations = 5,
-  time_unit = "ms",
-  check = FALSE
-  )
-```
-
-Here are the results of this first benchmark:
-```{r bench_results1}
-benchmark1 %>%
-  arrange(median)
-```
-
-```{r bench_plot1, fig.width=7}
-benchmark1 %>%
-  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
-  plot()
-```
-
-Note that the scale of the plot is logarithmic.
-
-## Benchmark on smaller dataset
-
-Let's repeat our benchmark using a smaller dataset:
-
-```{r bench_run2}
-drugs_small <- drugs[1:100, ]  ## subset dataset to 100 rows
-drugs_small_dt <- data.table(drugs_small) ## coercion to data.table
-
-benchmark2 <- mark(
-  vectorized = {
-    drugs_small %>%
-      mutate(everused = codeine | demerol | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
-  lay = {
-    drugs_small %>%
-      select(-caseid) %>%
-      mutate(everused = lay(., any))},
-  lay_alternative = {
-    drugs_small %>%
-      mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
-  c_across = {
-    drugs_small %>%
-      rowwise() %>%
-      mutate(everused = any(c_across(-caseid))) %>%
-      ungroup()},
-  pivot_pivot = {
-    drugs_small %>%
-      pivot_longer(-caseid) %>%
-      group_by(caseid) %>%
-      mutate(everused = any(value)) %>%
-      ungroup() %>%
-      pivot_wider()},
-  pmap = {
-    drugs_small %>%
-      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
-  data.table = {
-    drugs_small_dt[, ..I := .I]
-    drugs_small_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
-  apply = {
-    drugs_small %>%
-      mutate(everused = apply(across(-caseid), 1, any))},
-  'for' = {
-    everused <- logical(nrow(drugs_small))
-    columns_in <- colnames(drugs_small) != "caseid"
-    for (i in seq_len(nrow(drugs_small))) everused[i] <- any(drugs_small[i, columns_in])},
   iterations = 30,
   time_unit = "ms",
   check = FALSE
