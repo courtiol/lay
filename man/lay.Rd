@@ -67,71 +67,62 @@ slow down the computation despite not influencing the output.
 # usage without dplyr -------------------------------------------------------------------------
 
 # lay can return a vector
-lay(iris[1:5, c("Sepal.Length", "Sepal.Width")], mean)
+lay(drugs[1:10, -1], any)
 
-# lay can return a data frame
-lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-   ~ data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x)))
+# lay can return a data frame (note the use of the rlang lambda syntax ~ fn(.x))
+lay(drugs[1:10, -1],
+   ~ data.frame(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0)))
 
 # lay can be used to augment a data frame
-lay(iris[1:5, c("Sepal.Length", "Sepal.Width")],
-   ~ cbind(iris[1:5, ], data.frame(Min = min(.x), Mean = mean(.x), Max = max(.x))))
+cbind(drugs[1:10, ],
+      lay(drugs[1:10, -1],
+         ~ data.frame(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 
 
 # usage with dplyr ----------------------------------------------------------------------------
 
 if (require("dplyr")) {
 
-  # for enhanced printing
-  iris <- as_tibble(iris)
+  # apply any() to each row
+  drugs \%>\%
+    mutate(everused = lay(across(-caseid), any))
 
-  # apply mean for each row
-  iris \%>\%
-    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
+  # a workaround would be to use `rowSums`
+  drugs \%>\%
+    mutate(everused = rowSums(across(-caseid)) > 0)
 
-  # not that useful because there is `rowMeans` already
-  iris \%>\%
-    mutate(Sepal.Mean = rowMeans(across(starts_with("Sepal"))))
-
-  # but then we can lay other functions, e.g. median
-  iris \%>\%
-    mutate(Sepal.Median = lay(across(starts_with("Sepal")), median))
+  # but we can lay any function taking a vector as input, e.g. median
+  drugs \%>\%
+    mutate(used_median = lay(across(-caseid), median))
 
   # you can pass arguments to the function
-  iris_with_NA <- iris
-  iris_with_NA[1, 1] <- NA
-  iris_with_NA \%>\%
-    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean))
-  iris_with_NA \%>\%
-    mutate(Sepal.Mean = lay(across(starts_with("Sepal")), mean, na.rm = TRUE))
+  drugs_with_NA <- drugs
+  drugs_with_NA[1, 2] <- NA
 
-  # you can also lay into a tibble if you want multiple results
-  iris \%>\%
-    mutate(Sepal.Mean = lay(
-      across(starts_with("Sepal")),
-      ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
-    ))
+  drugs_with_NA \%>\%
+    mutate(everused = lay(across(-caseid), any))
+  drugs_with_NA \%>\%
+    mutate(everused = lay(across(-caseid), any, na.rm = TRUE))
 
-  # the previous example creates a df-column called `Sepal.Mean`,
-  # which you could unpack with `tidyr::unpack()`, but
-  # if you skip `Sepal.Mean =` things get auto spliced for you!
-  iris \%>\%
-    mutate(lay(
-      across(starts_with("Sepal")),
-      ~ tibble(Min = min(.x), Mean = mean(.x), Max = max(.x))
-    ))
+  # you can lay the output into a 1-row tibble (or data.frame)
+  # if you want to apply multiple functions
+  drugs \%>\%
+    mutate(lay(across(-caseid),
+             ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 
-  # if your function returns a vector and not a scalar,
-  # just wrap it up in list (note also the use of the lambda syntax ~ fn(.x) here)
-  iris \%>\%
-    mutate(Sepal.Quantiles = lay(across(starts_with("Sepal")), ~ list(quantile(.x))))
+  # note that naming the output prevent the automatic splicing and you obtain a df-column
+  drugs \%>\%
+    mutate(usage = lay(across(-caseid),
+              ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 
-  # the previous example creates a list-column called `Sepal.Quantiles`,
-  # which you could unnest with `tidyr::unnest_wider()`, but
-  # you can once again rely on a tibble and skip the column name to get the output
-  # auto spliced for you!
-  iris \%>\%
-    mutate(lay(across(starts_with("Sepal")), ~ as_tibble_row(quantile(.x))))
+  # if your function returns a vector longer than a scalar, you should turn the output
+  # into a tibble, which is the job of as_tibble_row()
+  drugs \%>\%
+    mutate(lay(across(-caseid), ~ as_tibble_row(quantile(.x))))
+
+  # note that you could also wrap the output in a list and name it to obtain a list-column
+  drugs \%>\%
+    mutate(usage_quantiles = lay(across(-caseid), ~ list(quantile(.x))))
 }
 
 }
