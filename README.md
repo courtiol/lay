@@ -28,9 +28,8 @@ functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel
 as if it was part of it (but you can use **lay()** without **{dplyr}**).
 
 There is hardly any code behind **lay()** (it can be coded in 3 lines),
-so this is probably just an interim solution before a proper package
-fulfils the need \[note: perhaps this package exists already… perhaps it
-is [**{slider}**](https://davisvaughan.github.io/slider/)!\].
+so this is probably just an interim solution before an established
+package fulfils the need.
 
 ## Installation
 
@@ -358,7 +357,7 @@ a user perspective it is a little too geeky-scary.
 library(slider)   ## requires to have installed {slider}
 
 drugs %>%
-  mutate(everused = slide_lgl(across(-caseid), any))
+  mutate(everused = slide_vec(across(-caseid), any))
 #> # A tibble: 100 x 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
@@ -377,11 +376,9 @@ drugs %>%
 
 The package [**{slider}**](https://davisvaughan.github.io/slider/) is a
 powerful package which provides several *sliding window* functions. It
-can be used to perform rowwise operations and is very similar to
-**{lay}**. It is very efficient but two possible drawbacks are:
-
--   you need to indicate the class of the output you want
--   I am not sure it supports the automatic splicing demonstrated above?
+can be used to perform rowwise operations and is quite similar to
+**{lay}** in terms syntax. It is however not as efficient as **{lay}**
+and I am not sure it supports the automatic splicing demonstrated above.
 
 ### Alternative 6: **{data.table}**
 

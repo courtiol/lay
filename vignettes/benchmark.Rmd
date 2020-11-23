@@ -97,7 +97,7 @@ benchmark1 <- mark(
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
   slider = {
     drugs_full %>%
-      mutate(everused = slide_lgl(across(-caseid), any))},
+      mutate(everused = slide_vec(across(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
@@ -163,7 +163,7 @@ benchmark2 <- mark(
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
   slider = {
     drugs %>%
-      mutate(everused = slide_lgl(across(-caseid), any))},
+      mutate(everused = slide_vec(across(-caseid), any))},
   data.table = {
     drugs_dt[, ..I := .I]
     drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
