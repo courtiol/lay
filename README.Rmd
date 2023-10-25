@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ## Why **{lay}**?
 
-Doing rowwise operation is notoriously awkward in R.
+Doing rowwise operations are notoriously awkward in R.
 
 Many options have been proposed, but they tend to be complicated, inefficient, or both.
 
@@ -72,7 +72,7 @@ drugs_full %>%
   mutate(everused = lay(across(-caseid), any))
 ```
 
-We used **mutate()** from **{dplyr}** to create a new column called *everused*, and we use **across()** from that same package to remove the column *caseid* when laying down each row of the data and applying the function **any()**.
+We used **mutate()** from **{dplyr}** to create a new column called *everused*, and we used **across()** from that same package to remove the column *caseid* when laying down each row of the data and applying the function **any()**.
 
 When combining **lay()** and **{dplyr}**, you should always use **across()**. The function **across()** lets you pick among many [selection helpers](https://tidyselect.r-lib.org/reference/language.html) from the package **{tidyselect}**, which makes it easy to specify which columns to consider.
 
@@ -243,7 +243,7 @@ nor particularly efficient.
 
 ### Other alternatives?
 
-There are probably other ways. If you think of a nice one, please leave an issue!
+There are probably other ways. If you think of a nice one, please leave an issue and we will add it here!
 
 
 ## Efficiency
@@ -310,12 +310,12 @@ As you can see, **lay()** is not just simple and powerful, it is also quite effi
 
 <img src="https://github.com/courtiol/lay/raw/master/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
-This package has been created by **@romainfrancois** as a reply to a tweet I posted under **@rdataberlin** in February 2020.
+The first draft of this package has been created by **@romainfrancois** as a reply to a tweet I posted under **@rdataberlin** in February 2020.
 At the time I was exploring different ways to perform rowwise jobs in R and I was experimenting with various ideas on how to exploit 
 the fact that the newly introduced function **across()** from **{dplyr}** creates tibbles on which on can easily apply a function.
 Romain came up with **lay()** as the better solution making good use of **{rlang}** & **{vctrs}**.
 
 The verb **lay()** never made it to be integrated within **{dplyr}** and, so far, I still find **lay()** superior than
-most alternatives, which is why I decided to revive this package in November 2020.
+most alternatives, which is why I decided to maintain this package.
 
-In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois) as I do.
+In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois.
