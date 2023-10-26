@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# **{lay}** – an R package for simple but efficient rowwise jobs
+# <img src="inst/figures/logo.png" align="right" height="138" /> **{lay}**
 
 <!-- badges: start -->
 
