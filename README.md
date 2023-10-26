@@ -348,7 +348,7 @@ drugs |>
 ```
 
 This is a perfectly fine solution and actually part of what one
-implementation of **lay()** relies on (if \`.method = “tidy”), but from
+implementation of **lay()** relies on (if `.method = "tidy"`), but from
 a user perspective it is a little too geeky-scary.
 
 ### Alternative 5: **{slider}**
@@ -497,7 +497,7 @@ quite efficient!
 
 ## History
 
-<img src="https://github.com/courtiol/lay/raw/master/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
+<img src="https://github.com/courtiol/lay/raw/main/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
 The first draft of this package has been created by **@romainfrancois**
 as a reply to a tweet I posted under **@rdataberlin** in February 2020.
