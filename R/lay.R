@@ -35,6 +35,8 @@
 #' Possible values are:
 #'
 #'   - A function, e.g. `mean`
+#'   - An anonymous function, .e.g. `function(x) mean(x, na.rm = TRUE)`
+#'   - An anonymous function with shorthand, .e.g. `\(x) mean(x, na.rm = TRUE)`
 #'   - A purrr-style lambda, e.g. `~ mean(.x, na.rm = TRUE)`
 #'
 #'     (wrap the output in a data frame to apply several functions at once, e.g.
