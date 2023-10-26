@@ -21,11 +21,11 @@
 #' classes similar enough to be easily coerced into a single class. Note that `.method = "apply"`
 #' also allows for the input to be a matrix and is more permissive in terms of data coercion.
 #'
-#' - The output of `.fn` should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
+#' - The output of `.fn` should be a scalar (i.e., vector of length 1) or a 1 row data frame (or
 #' tibble).
 #'
 #' If you use `lay()` within [dplyr::mutate()], make sure that the data used by [dplyr::mutate()]
-#' contain no row-grouping, i.e what is passed to `.data` in [dplyr::mutate()] should not be of
+#' contain no row-grouping, i.e., what is passed to `.data` in [dplyr::mutate()] should not be of
 #' class `grouped_df` or `rowwise_df`. If it is, `lay()` will be called multiple times, which will
 #' slow down the computation despite not influencing the output.
 #'
@@ -62,7 +62,12 @@
 #' # lay can return a vector
 #' lay(drugs[1:10, -1], any)
 #'
-#' # lay can return a data frame (note the use of the rlang lambda syntax ~ fn(.x))
+#' # lay can return a data frame
+#' ## using the shorthand function syntax \(x) .fn(x)
+#' lay(drugs[1:10, -1],
+#'    \(x) data.frame(drugs_taken = sum(x), drugs_not_taken = sum(x == 0)))
+#'
+#' ## using the rlang lambda syntax ~ fn(.x)
 #' lay(drugs[1:10, -1],
 #'    ~ data.frame(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0)))
 #'
