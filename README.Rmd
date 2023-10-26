@@ -318,4 +318,4 @@ Romain came up with **lay()** as the better solution making good use of **{rlang
 The verb **lay()** never made it to be integrated within **{dplyr}** and, so far, I still find **lay()** superior than
 most alternatives, which is why I decided to maintain this package.
 
-In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois.
+In short, I deserve little credit and instead you should feel free to buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his [github profile](https://github.com/romainfrancois).
