@@ -12,25 +12,28 @@ status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/pa
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-## Why **{lay}**?
+## An R package for simple but efficient rowwise jobs
+
+### Why **{lay}**?
 
 Doing rowwise operations are notoriously awkward in R.
 
 Many options have been proposed, but they tend to be complicated,
 inefficient, or both.
 
-Instead **lay()** – the only function of the package **{lay}** – aims at
+Instead `lay()` – the only function of the package **{lay}** – aims at
 reaching a sweet spot between simplicity and efficiency.
 
 The function has been specifically designed to be combined with
 functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel
-as if it was part of it (but you can use **lay()** without **{dplyr}**).
+as if it was part of it (but you can use `lay()` without
+[**{dplyr}**](https://dplyr.tidyverse.org/)).
 
-There is hardly any code behind **lay()** (it can be coded in 3 lines),
-so this is probably just an interim solution before an established
-package fulfils the need.
+There is hardly any code behind `lay()` (it can be coded in 3 lines), so
+this is probably just an interim solution before an established package
+fulfils the need.
 
-## Installation
+### Installation
 
 You can install a development version of **{lay}** with:
 
@@ -39,7 +42,7 @@ You can install a development version of **{lay}** with:
 remotes::install_github("courtiol/lay")
 ```
 
-## Motivation
+### Motivation
 
 Consider the following dataset, which contains information about the use
 of pain relievers for non medical purpose.
@@ -71,9 +74,9 @@ of these pain relievers.
 
 How would you proceed?
 
-## Our solution: **lay()**
+### Our solution: `lay()`
 
-This is how you would achieve our goal using **lay()**:
+This is how you would achieve our goal using `lay()`:
 
 ``` r
 library(dplyr, warn.conflicts = FALSE)  ## requires to have installed {dplyr}
@@ -96,20 +99,20 @@ drugs_full |>
 #> # ℹ 55,261 more rows
 ```
 
-We used **mutate()** from **{dplyr}** to create a new column called
-*everused*, and we used **pick()** from that same package to remove the
-column *caseid* when laying down each row of the data and applying the
-function **any()**.
+We used `mutate()` from [**{dplyr}**](https://dplyr.tidyverse.org/) to
+create a new column called *everused*, and we used `pick()` from that
+same package to remove the column *caseid* when laying down each row of
+the data and applying the function `any()`.
 
-When combining **lay()** and **{dplyr}**, you should always use
-**pick()** or **across()**. The functions **pick()** and **across()**
-let you pick among many [selection
+When combining `lay()` and [**{dplyr}**](https://dplyr.tidyverse.org/),
+you should always use `pick()` or `across()`. The functions `pick()` and
+`across()` let you pick among many [selection
 helpers](https://tidyselect.r-lib.org/reference/language.html) from the
-package **{tidyselect}**, which makes it easy to specify which columns
-to consider.
+package [**{tidyselect}**](https://tidyselect.r-lib.org/), which makes
+it easy to specify which columns to consider.
 
-Our function **lay()** is quite flexible! For example, you can pass
-argument(s) of the function you wish to apply rowwise (here **any()**):
+Our function `lay()` is quite flexible! For example, you can pass
+argument(s) of the function you wish to apply rowwise (here `any()`):
 
 ``` r
 drugs_with_NA <- drugs     ## create a copy of the dataset
@@ -132,7 +135,7 @@ drugs_with_NA |>
 #> 1 1           NA       0       0       0       0       0       0 FALSE
 ```
 
-Since one of the backbones of **lay()** is
+Since one of the backbones of `lay()` is
 [**{rlang}**](https://rlang.r-lib.org), you can use the so-called
 [*lambda* syntax](https://rlang.r-lib.org/reference/as_function.html) to
 define anonymous functions on the fly:
@@ -185,18 +188,18 @@ world_bank_pop |>
 #> #   `2014` <dbl>, `2015` <dbl>, `2016` <dbl>, `2017` <dbl>
 ```
 
-Since the other backbone of **lay()** is
+Since the other backbone of `lay()` is
 [**{vctrs}**](https://vctrs.r-lib.org), the splicing happens
 automatically (unless the output of the call is used to create a named
 column). This is why, in the last chunk of code, three different columns
 (*min*, *mean* and *max*) where directly created.
 
-**Important:** when using **lay()** the function you want to use for the
+**Important:** when using `lay()` the function you want to use for the
 rowwise job must output a scalar (vector of length 1), or a tibble or
 data frame with a single row.
 
 We can apply a function that returns a vector of length \> 1 by turning
-such vector into a tibble using **as_tibble_row()** from
+such vector into a tibble using `as_tibble_row()` from
 [**{tibble}**](https://tibble.tidyverse.org/):
 
 ``` r
@@ -224,14 +227,14 @@ world_bank_pop |>
 #> #   `2017` <dbl>
 ```
 
-## Alternatives to **lay()**
+### Alternatives to `lay()`
 
 Of course, there are many alternatives to perform rowwise jobs.
 
 Let’s now consider, in turns, these alternatives – sticking to our
 example about drugs usage.
 
-### Alternative 1: vectorized solution
+#### Alternative 1: vectorized solution
 
 One solution is to simply do the following:
 
@@ -262,7 +265,7 @@ coding this way presents two main limitations:
 - you are stuck with expressing your task with logical and arithmetic
   operators, which is not always sufficient
 
-### Alternative 2: 100% **{dplyr}**
+#### Alternative 2: 100% [**{dplyr}**](https://dplyr.tidyverse.org/)
 
 ``` r
 drugs |>
@@ -285,12 +288,12 @@ drugs |>
 #> # ℹ 90 more rows
 ```
 
-It is easy to use as **c_across()** turns its input into a vector and
-**rowwise()** implies that the vector only represents one row at a time.
+It is easy to use as `c_across()` turns its input into a vector and
+`rowwise()` implies that the vector only represents one row at a time.
 Yet, for now it remains quite slow on large datasets (see **Efficiency**
 below).
 
-### Alternative 3: **{tidyr}**
+#### Alternative 3: [**{tidyr}**](https://tidyr.tidyverse.org/)
 
 ``` r
 library(tidyr)  ## requires to have installed {tidyr}
@@ -324,7 +327,7 @@ this involves a little too much intellectual gymnastic. It is also not
 particularly efficient on large dataset both in terms of computation
 time and memory required to pivot the tables.
 
-### Alternative 4: **{purrr}**
+#### Alternative 4: [**{purrr}**](https://purrr.tidyverse.org/)
 
 ``` r
 library(purrr)  ## requires to have installed {purrr}
@@ -348,10 +351,10 @@ drugs |>
 ```
 
 This is a perfectly fine solution and actually part of what one
-implementation of **lay()** relies on (if `.method = "tidy"`), but from
-a user perspective it is a little too geeky-scary.
+implementation of `lay()` relies on (if `.method = "tidy"`), but from a
+user perspective it is a little too geeky-scary.
 
-### Alternative 5: **{slider}**
+#### Alternative 5: [**{slider}**](https://davisvaughan.github.io/slider/)
 
 ``` r
 library(slider)   ## requires to have installed {slider}
@@ -380,18 +383,10 @@ can be used to perform rowwise operations and is quite similar to
 **{lay}** in terms syntax. It is however not as efficient as **{lay}**
 and I am not sure it supports the automatic splicing demonstrated above.
 
-### Alternative 6: **{data.table}**
+#### Alternative 6: [**{data.table}**](https://rdatatable.gitlab.io/data.table/)
 
 ``` r
 library(data.table)  ## requires to have installed {data.table}
-#> 
-#> Attaching package: 'data.table'
-#> The following object is masked from 'package:purrr':
-#> 
-#>     transpose
-#> The following objects are masked from 'package:dplyr':
-#> 
-#>     between, first, last
 
 drugs_dt <- data.table(drugs)
 
@@ -415,11 +410,13 @@ as_tibble(drugs_dt)
 #> # ℹ 90 more rows
 ```
 
-This is a solution for those using **{data.table}**. It is not
+This is a solution for those using
+[**{data.table}**](https://rdatatable.gitlab.io/data.table/). It is not
 particularly efficient, nor particularly easy to remember for those who
-do not program frequently using **{data.table}**.
+do not program frequently using
+[**{data.table}**](https://rdatatable.gitlab.io/data.table/).
 
-### Alternative 7: **apply()**
+#### Alternative 7: `apply()`
 
 ``` r
 drugs |>
@@ -441,11 +438,11 @@ drugs |>
 ```
 
 This is the base R solution. Very efficient and actually part of the
-default method used in **lay()**. Our implementation of **lay()** strips
-the need of defining the margin (the `1L` above) and benefits from the
+default method used in `lay()`. Our implementation of `lay()` strips the
+need of defining the margin (the `1L` above) and benefits from the
 automatic splicing and the lambda syntax as shown above.
 
-### Alternative 8: **for()**
+#### Alternative 8: `for (i in ...) {...}`
 
 ``` r
 drugs$everused <- NA
@@ -476,12 +473,12 @@ drugs
 This is another base R solution, which does not involve any external
 package. It is not very pretty, nor particularly efficient.
 
-### Other alternatives?
+#### Other alternatives?
 
 There are probably other ways. If you think of a nice one, please leave
 an issue and we will add it here!
 
-## Efficiency
+### Efficiency
 
 Here are the results of a benchmark comparing alternative
 implementations for our simple rowwise job on a larger dataset with 8
@@ -492,10 +489,10 @@ tests):
 
 Note that the x-axis of the plot is on a logarithmic scale.
 
-As you can see, **lay()** is not just simple and powerful, it is also
+As you can see, `lay()` is not just simple and powerful, it is also
 quite efficient!
 
-## History
+### History
 
 <img src="https://github.com/courtiol/lay/raw/main/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
@@ -503,14 +500,16 @@ The first draft of this package has been created by **@romainfrancois**
 as a reply to a tweet I posted under **@rdataberlin** in February 2020.
 At the time I was exploring different ways to perform rowwise jobs in R
 and I was experimenting with various ideas on how to exploit the fact
-that the newly introduced function **across()** from **{dplyr}** creates
-tibbles on which on can easily apply a function. Romain came up with
-**lay()** as the better solution making good use of **{rlang}** &
-**{vctrs}**.
+that the newly introduced function `across()` from
+[**{dplyr}**](https://dplyr.tidyverse.org/) creates tibbles on which on
+can easily apply a function. Romain came up with `lay()` as the better
+solution making good use of [**{rlang}**](https://rlang.r-lib.org/) &
+[**{vctrs}**](https://vctrs.r-lib.org/).
 
-The verb **lay()** never made it to be integrated within **{dplyr}**
-and, so far, I still find **lay()** superior than most alternatives,
-which is why I decided to maintain this package.
+The verb `lay()` never made it to be integrated within
+[**{dplyr}**](https://dplyr.tidyverse.org/) and, so far, I still find
+`lay()` superior than most alternatives, which is why I decided to
+maintain this package.
 
 In short, I deserve little credit and instead you should feel free to
 buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his
