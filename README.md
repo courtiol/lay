@@ -10,13 +10,15 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![CRAN
 status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
-## An R package for simple but efficient rowwise jobs
+## An R package for a simple and efficient implementation of rowwise jobs
 
 ### Why **{lay}**?
 
-Doing rowwise operations are notoriously awkward in R.
+Implementing rowwise operations for tabular data is notoriously awkward
+in R.
 
 Many options have been proposed, but they tend to be complicated,
 inefficient, or both.
@@ -30,8 +32,8 @@ as if it was part of it (but you can use `lay()` without
 [**{dplyr}**](https://dplyr.tidyverse.org/)).
 
 There is hardly any code behind `lay()` (it can be coded in 3 lines), so
-this is probably just an interim solution before an established package
-fulfils the need.
+this package may just be an interim solution before an established
+package fulfils the need… Time will tell.
 
 ### Installation
 
