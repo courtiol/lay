@@ -78,49 +78,49 @@
 #'
 #'   # apply any() to each row
 #'   drugs |>
-#'     mutate(everused = lay(across(-caseid), any))
+#'     mutate(everused = lay(pick(-caseid), any))
 #'
 #'   # apply any() to each row using all columns
 #'   drugs |>
 #'     select(-caseid) |>
-#'     mutate(everused = lay(across(everything()), any))
+#'     mutate(everused = lay(pick(everything()), any))
 #'
 #'   # a workaround would be to use `rowSums`
 #'   drugs |>
-#'     mutate(everused = rowSums(across(-caseid)) > 0)
+#'     mutate(everused = rowSums(pick(-caseid)) > 0)
 #'
 #'   # but we can lay any function taking a vector as input, e.g. median
 #'   drugs |>
-#'     mutate(used_median = lay(across(-caseid), median))
+#'     mutate(used_median = lay(pick(-caseid), median))
 #'
 #'   # you can pass arguments to the function
 #'   drugs_with_NA <- drugs
 #'   drugs_with_NA[1, 2] <- NA
 #'
 #'   drugs_with_NA |>
-#'     mutate(everused = lay(across(-caseid), any))
+#'     mutate(everused = lay(pick(-caseid), any))
 #'   drugs_with_NA |>
-#'     mutate(everused = lay(across(-caseid), any, na.rm = TRUE))
+#'     mutate(everused = lay(pick(-caseid), any, na.rm = TRUE))
 #'
 #'   # you can lay the output into a 1-row tibble (or data.frame)
 #'   # if you want to apply multiple functions
 #'   drugs |>
-#'     mutate(lay(across(-caseid),
+#'     mutate(lay(pick(-caseid),
 #'              ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 #'
 #'   # note that naming the output prevent the automatic splicing and you obtain a df-column
 #'   drugs |>
-#'     mutate(usage = lay(across(-caseid),
+#'     mutate(usage = lay(pick(-caseid),
 #'               ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 #'
 #'   # if your function returns a vector longer than a scalar, you should turn the output
 #'   # into a tibble, which is the job of as_tibble_row()
 #'   drugs |>
-#'     mutate(lay(across(-caseid), ~ as_tibble_row(quantile(.x))))
+#'     mutate(lay(pick(-caseid), ~ as_tibble_row(quantile(.x))))
 #'
 #'   # note that you could also wrap the output in a list and name it to obtain a list-column
 #'   drugs |>
-#'     mutate(usage_quantiles = lay(across(-caseid), ~ list(quantile(.x))))
+#'     mutate(usage_quantiles = lay(pick(-caseid), ~ list(quantile(.x))))
 #' }
 #'
 #' @export
@@ -131,10 +131,14 @@ lay <- function(.data, .fn, ..., .method = c("apply", "tidy")) {
   fn <- as_function(.fn)
 
   if (method == "tidy") {
+
     args <- list2(...)
     bits <- pmap(.data, function(...) exec(fn, vec_c(...), !!!args))
+
   } else if (method == "apply") {
+
     bits <- apply(.data, 1L, fn, ...)
+
   } else stop(".method input unknown")
 
   vec_c(!!!bits)

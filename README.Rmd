@@ -72,12 +72,12 @@ This is how you would achieve our goal using **lay()**:
 library(dplyr, warn.conflicts = FALSE)  ## requires to have installed {dplyr}
 
 drugs_full |>
-  mutate(everused = lay(across(-caseid), any))
+  mutate(everused = lay(pick(-caseid), any))
 ```
 
-We used **mutate()** from **{dplyr}** to create a new column called *everused*, and we used **across()** from that same package to remove the column *caseid* when laying down each row of the data and applying the function **any()**.
+We used **mutate()** from **{dplyr}** to create a new column called *everused*, and we used **pick()** from that same package to remove the column *caseid* when laying down each row of the data and applying the function **any()**.
 
-When combining **lay()** and **{dplyr}**, you should always use **across()**. The function **across()** lets you pick among many [selection helpers](https://tidyselect.r-lib.org/reference/language.html) from the package **{tidyselect}**, which makes it easy to specify which columns to consider.
+When combining **lay()** and **{dplyr}**, you should always use **pick()** or **across()**. The functions **pick()** and **across()** let you pick among many [selection helpers](https://tidyselect.r-lib.org/reference/language.html) from the package **{tidyselect}**, which makes it easy to specify which columns to consider.
 
 Our function **lay()** is quite flexible! For example, you can pass argument(s) of the function you wish to apply rowwise (here **any()**):
 
@@ -86,11 +86,11 @@ drugs_with_NA <- drugs     ## create a copy of the dataset
 drugs_with_NA[1, 2] <- NA  ## introduce a missing value
 
 drugs_with_NA |>
-  mutate(everused = lay(across(-caseid), any)) |> ## without additional argument
+  mutate(everused = lay(pick(-caseid), any)) |> ## without additional argument
   slice(1)  ## keep first row only
   
 drugs_with_NA |>
-  mutate(everused = lay(across(-caseid), any, na.rm = TRUE)) |>  ## with additional argument
+  mutate(everused = lay(pick(-caseid), any, na.rm = TRUE)) |>  ## with additional argument
   slice(1)
 ```
 
@@ -98,7 +98,7 @@ Since one of the backbones of **lay()** is  [**{rlang}**](https://rlang.r-lib.or
 
 ```{r lambda}
 drugs_with_NA |>
- mutate(everused = lay(across(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
+ mutate(everused = lay(pick(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
 ```
 
 We can also apply many functions at once, as exemplified with another dataset:
@@ -108,7 +108,7 @@ data("world_bank_pop", package = "tidyr")  ## requires to have installed {tidyr}
 
 world_bank_pop |>
   filter(indicator == "SP.POP.TOTL") |>
-  mutate(lay(across(matches("\\d")),
+  mutate(lay(pick(matches("\\d")),
              ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))), .after = indicator)
 ```
 
@@ -121,7 +121,7 @@ We can apply a function that returns a vector of length > 1 by turning such vect
 ```{r worldbank2}
 world_bank_pop |>
   filter(indicator == "SP.POP.TOTL") |>
-  mutate(lay(across(matches("\\d")),
+  mutate(lay(pick(matches("\\d")),
              ~ as_tibble_row(quantile(.x, na.rm = TRUE))), .after = indicator)
 ```
 
@@ -183,7 +183,7 @@ to pivot the tables.
 library(purrr)  ## requires to have installed {purrr}
 
 drugs |>
-  mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))
+  mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))
 ```
 This is a perfectly fine solution and actually part of what one implementation of **lay()** relies on
 (if `.method = "tidy"), but from a user perspective it is a little too geeky-scary.
@@ -195,7 +195,7 @@ This is a perfectly fine solution and actually part of what one implementation o
 library(slider)   ## requires to have installed {slider}
 
 drugs |>
-  mutate(everused = slide_vec(across(-caseid), any))
+  mutate(everused = slide_vec(pick(-caseid), any))
 ```
 The package [**{slider}**](https://davisvaughan.github.io/slider/) is a powerful package which provides several *sliding window* functions.
 It can be used to perform rowwise operations and is quite similar to **{lay}** in terms syntax.
@@ -222,7 +222,7 @@ easy to remember for those who do not program frequently using **{data.table}**.
 
 ```{r apply}
 drugs |>
-  mutate(everused = apply(across(-caseid), 1L, any))
+  mutate(everused = apply(pick(-caseid), 1L, any))
 ```
 This is the base R solution. Very efficient and actually part of the default method used in **lay()**.
 Our implementation of **lay()** strips the need of defining the margin (the `1L` above) and benefits from
@@ -268,7 +268,7 @@ benchmark1 <- bench::mark(
   lay = {
     drugs_full |>
       select(-caseid) |>
-      mutate(everused = lay(across(everything()), any))},
+      mutate(everused = lay(pick(everything()), any))},
   c_across = {
     drugs_full |>
       rowwise() |>
@@ -283,16 +283,16 @@ benchmark1 <- bench::mark(
       pivot_wider()},
   pmap = {
     drugs_full |>
-      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+      mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))},
   slider = {
     drugs_full |>
-      mutate(everused = slide_lgl(across(-caseid), any))},
+      mutate(everused = slide_lgl(pick(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
     drugs_full |>
-      mutate(everused = apply(across(-caseid), 1, any))},
+      mutate(everused = apply(pick(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs_full))
     columns_in <- colnames(drugs_full) != "caseid"

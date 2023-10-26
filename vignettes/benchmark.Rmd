@@ -76,10 +76,10 @@ benchmark1 <- mark(
   lay = {
     drugs_full |>
       select(-caseid) |>
-      mutate(everused = lay(across(everything()), any))},
+      mutate(everused = lay(pick(everything()), any))},
   lay_alternative = {
     drugs_full |>
-      mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
+      mutate(everused = lay(pick(-caseid), any, .method = "tidy"))},
   c_across = {
     drugs_full |>
       rowwise() |>
@@ -94,16 +94,16 @@ benchmark1 <- mark(
       pivot_wider()},
   pmap = {
     drugs_full |>
-      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+      mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))},
   slider = {
     drugs_full |>
-      mutate(everused = slide_vec(across(-caseid), any))},
+      mutate(everused = slide_vec(pick(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
     drugs_full |>
-      mutate(everused = apply(across(-caseid), 1, any))},
+      mutate(everused = apply(pick(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs_full))
     columns_in <- colnames(drugs_full) != "caseid"
@@ -142,10 +142,10 @@ benchmark2 <- mark(
   lay = {
     drugs |>
       select(-caseid) |>
-      mutate(everused = lay(across(everything()), any))},
+      mutate(everused = lay(pick(everything()), any))},
   lay_alternative = {
     drugs |>
-      mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
+      mutate(everused = lay(pick(-caseid), any, .method = "tidy"))},
   c_across = {
     drugs |>
       rowwise() |>
@@ -160,16 +160,16 @@ benchmark2 <- mark(
       pivot_wider()},
   pmap = {
     drugs |>
-      mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
+      mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))},
   slider = {
     drugs |>
-      mutate(everused = slide_vec(across(-caseid), any))},
+      mutate(everused = slide_vec(pick(-caseid), any))},
   data.table = {
     drugs_dt[, ..I := .I]
     drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
     drugs |>
-      mutate(everused = apply(across(-caseid), 1, any))},
+      mutate(everused = apply(pick(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs))
     columns_in <- colnames(drugs) != "caseid"
