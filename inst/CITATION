@@ -1,0 +1,9 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "Simple but Efficient Rowwise Jobs",
+  author   = c(person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0637-2959")),
+               person("Romain", "Francois", role = c("aut"), comment = c(ORCID = "0000-0002-2444-4226"))
+             ),
+  year     = 2023,
+  url   = "https://github.com/courtiol/lay"
+)
