@@ -207,7 +207,9 @@ library(data.table)  ## requires to have installed {data.table}
 drugs_dt <- data.table(drugs)
 
 drugs_dt[, ..I := .I]
-  drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
+drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
+drugs_dt[, ..I := NULL]
+as_tibble(drugs_dt)
 ```
 This is a solution for those using **{data.table}**. It is not particularly efficient, nor particularly
 easy to remember for those who do not program frequently using **{data.table}**.
