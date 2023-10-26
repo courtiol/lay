@@ -1,8 +1,8 @@
 ---
-title: "Benchmarking alternative implementations for a simple rowwise job"
+title: "Benchmarking alternative implementations for rowwise jobs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Benchmarking alternative implementations for a simple rowwise job}
+  %\VignetteIndexEntry{Benchmarking alternative implementations for rowwise jobs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
