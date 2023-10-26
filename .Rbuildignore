@@ -8,3 +8,6 @@
 ^\.github/workflows/pr-commands\.yaml$
 ^source\_data$
 ^source\_hexsticker$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

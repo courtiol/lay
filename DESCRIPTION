@@ -7,7 +7,7 @@ Authors@R: c(
     )
 Description: create efficiently new column(s) in a data frame (including tibble) by applying a function one row at a time.
 License: MIT + file LICENSE
-URL: https://github.com/courtiol/lay
+URL: https://courtiol.github.io/lay/
 BugReports: https://github.com/courtiol/lay/issues/
 Encoding: UTF-8
 LazyData: true
