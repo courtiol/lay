@@ -4,7 +4,7 @@
 \alias{lay}
 \title{Apply a function within each row.}
 \usage{
-lay(.data, .fn, ..., .method = "apply")
+lay(.data, .fn, ..., .method = c("apply", "tidy"))
 }
 \arguments{
 \item{.data}{A data frame or tibble (or other data frame extensions).}
@@ -13,6 +13,8 @@ lay(.data, .fn, ..., .method = "apply")
 Possible values are:
 \itemize{
 \item A function, e.g. \code{mean}
+\item An anonymous function, .e.g. \code{function(x) mean(x, na.rm = TRUE)}
+\item An anonymous function with shorthand, .e.g. \verb{\\(x) mean(x, na.rm = TRUE)}
 \item A purrr-style lambda, e.g. \code{~ mean(.x, na.rm = TRUE)}
 
 (wrap the output in a data frame to apply several functions at once, e.g.
@@ -25,7 +27,7 @@ Possible values are:
 is used to apply the rowwise job:
 \itemize{
 \item "apply", the default internally uses the function \code{\link[=apply]{apply()}}.
-\item "tidy", internally uses \code{\link[purrr:map2]{purrr::pmap()}} and is stricter with respect to class coercion
+\item "tidy", internally uses \code{\link[purrr:pmap]{purrr::pmap()}} and is stricter with respect to class coercion
 across columns.
 }
 
@@ -53,12 +55,12 @@ The function \code{lay()} should work in a wide range of situations, provided th
 \item The input \code{.data} should be a data frame (including tibble) with columns of same class, or of
 classes similar enough to be easily coerced into a single class. Note that \code{.method = "apply"}
 also allows for the input to be a matrix and is more permissive in terms of data coercion.
-\item The output of \code{.fn} should be a scalar (i.e. vector of length 1) or a 1 row data frame (or
+\item The output of \code{.fn} should be a scalar (i.e., vector of length 1) or a 1 row data frame (or
 tibble).
 }
 
 If you use \code{lay()} within \code{\link[dplyr:mutate]{dplyr::mutate()}}, make sure that the data used by \code{\link[dplyr:mutate]{dplyr::mutate()}}
-contain no row-grouping, i.e what is passed to \code{.data} in \code{\link[dplyr:mutate]{dplyr::mutate()}} should not be of
+contain no row-grouping, i.e., what is passed to \code{.data} in \code{\link[dplyr:mutate]{dplyr::mutate()}} should not be of
 class \code{grouped_df} or \code{rowwise_df}. If it is, \code{lay()} will be called multiple times, which will
 slow down the computation despite not influencing the output.
 }
@@ -69,7 +71,12 @@ slow down the computation despite not influencing the output.
 # lay can return a vector
 lay(drugs[1:10, -1], any)
 
-# lay can return a data frame (note the use of the rlang lambda syntax ~ fn(.x))
+# lay can return a data frame
+## using the shorthand function syntax \(x) .fn(x)
+lay(drugs[1:10, -1],
+   \(x) data.frame(drugs_taken = sum(x), drugs_not_taken = sum(x == 0)))
+
+## using the rlang lambda syntax ~ fn(.x)
 lay(drugs[1:10, -1],
    ~ data.frame(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0)))
 
@@ -84,45 +91,50 @@ cbind(drugs[1:10, ],
 if (require("dplyr")) {
 
   # apply any() to each row
-  drugs \%>\%
-    mutate(everused = lay(across(-caseid), any))
+  drugs |>
+    mutate(everused = lay(pick(-caseid), any))
+
+  # apply any() to each row using all columns
+  drugs |>
+    select(-caseid) |>
+    mutate(everused = lay(pick(everything()), any))
 
   # a workaround would be to use `rowSums`
-  drugs \%>\%
-    mutate(everused = rowSums(across(-caseid)) > 0)
+  drugs |>
+    mutate(everused = rowSums(pick(-caseid)) > 0)
 
   # but we can lay any function taking a vector as input, e.g. median
-  drugs \%>\%
-    mutate(used_median = lay(across(-caseid), median))
+  drugs |>
+    mutate(used_median = lay(pick(-caseid), median))
 
   # you can pass arguments to the function
   drugs_with_NA <- drugs
   drugs_with_NA[1, 2] <- NA
 
-  drugs_with_NA \%>\%
-    mutate(everused = lay(across(-caseid), any))
-  drugs_with_NA \%>\%
-    mutate(everused = lay(across(-caseid), any, na.rm = TRUE))
+  drugs_with_NA |>
+    mutate(everused = lay(pick(-caseid), any))
+  drugs_with_NA |>
+    mutate(everused = lay(pick(-caseid), any, na.rm = TRUE))
 
   # you can lay the output into a 1-row tibble (or data.frame)
   # if you want to apply multiple functions
-  drugs \%>\%
-    mutate(lay(across(-caseid),
+  drugs |>
+    mutate(lay(pick(-caseid),
              ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 
   # note that naming the output prevent the automatic splicing and you obtain a df-column
-  drugs \%>\%
-    mutate(usage = lay(across(-caseid),
+  drugs |>
+    mutate(usage = lay(pick(-caseid),
               ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 
   # if your function returns a vector longer than a scalar, you should turn the output
   # into a tibble, which is the job of as_tibble_row()
-  drugs \%>\%
-    mutate(lay(across(-caseid), ~ as_tibble_row(quantile(.x))))
+  drugs |>
+    mutate(lay(pick(-caseid), ~ as_tibble_row(quantile(.x))))
 
   # note that you could also wrap the output in a list and name it to obtain a list-column
-  drugs \%>\%
-    mutate(usage_quantiles = lay(across(-caseid), ~ list(quantile(.x))))
+  drugs |>
+    mutate(usage_quantiles = lay(pick(-caseid), ~ list(quantile(.x))))
 }
 
 }

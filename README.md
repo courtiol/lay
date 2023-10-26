@@ -9,13 +9,12 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
-[![R build
-status](https://github.com/courtiol/lay/workflows/R-CMD-check/badge.svg)](https://github.com/courtiol/lay)
+[![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Why **{lay}**?
 
-Doing rowwise operation is notoriously awkward in R.
+Doing rowwise operations are notoriously awkward in R.
 
 Many options have been proposed, but they tend to be complicated,
 inefficient, or both.
@@ -48,7 +47,7 @@ of pain relievers for non medical purpose.
 ``` r
 library(lay)  ## requires to have installed {lay}
 drugs
-#> # A tibble: 100 x 8
+#> # A tibble: 100 × 8
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int>
 #>  1 1            0       0       0       0       0       0       0
@@ -61,7 +60,7 @@ drugs
 #>  8 8            0       0       0       0       0       0       0
 #>  9 9            0       0       0       0       0       0       1
 #> 10 10           0       0       0       0       0       0       0
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 The dataset is [tidy](https://vita.had.co.nz/papers/tidy-data.pdf): each
@@ -79,9 +78,9 @@ This is how you would achieve our goal using **lay()**:
 ``` r
 library(dplyr, warn.conflicts = FALSE)  ## requires to have installed {dplyr}
 
-drugs_full %>%
-  mutate(everused = lay(across(-caseid), any))
-#> # A tibble: 55,271 x 9
+drugs_full |>
+  mutate(everused = lay(pick(-caseid), any))
+#> # A tibble: 55,271 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -94,17 +93,17 @@ drugs_full %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 55,261 more rows
+#> # ℹ 55,261 more rows
 ```
 
 We used **mutate()** from **{dplyr}** to create a new column called
-*everused*, and we use **across()** from that same package to remove the
+*everused*, and we used **pick()** from that same package to remove the
 column *caseid* when laying down each row of the data and applying the
 function **any()**.
 
 When combining **lay()** and **{dplyr}**, you should always use
-**across()**. The function **across()** lets you pick among many
-[selection
+**pick()** or **across()**. The functions **pick()** and **across()**
+let you pick among many [selection
 helpers](https://tidyselect.r-lib.org/reference/language.html) from the
 package **{tidyselect}**, which makes it easy to specify which columns
 to consider.
@@ -116,18 +115,18 @@ argument(s) of the function you wish to apply rowwise (here **any()**):
 drugs_with_NA <- drugs     ## create a copy of the dataset
 drugs_with_NA[1, 2] <- NA  ## introduce a missing value
 
-drugs_with_NA %>%
-  mutate(everused = lay(across(-caseid), any)) %>% ## without additional argument
+drugs_with_NA |>
+  mutate(everused = lay(pick(-caseid), any)) |> ## without additional argument
   slice(1)  ## keep first row only
-#> # A tibble: 1 x 9
+#> # A tibble: 1 × 9
 #>   caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>   <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #> 1 1           NA       0       0       0       0       0       0 NA
   
-drugs_with_NA %>%
-  mutate(everused = lay(across(-caseid), any, na.rm = TRUE)) %>%  ## with additional argument
+drugs_with_NA |>
+  mutate(everused = lay(pick(-caseid), any, na.rm = TRUE)) |>  ## with additional argument
   slice(1)
-#> # A tibble: 1 x 9
+#> # A tibble: 1 × 9
 #>   caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>   <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #> 1 1           NA       0       0       0       0       0       0 FALSE
@@ -139,9 +138,9 @@ Since one of the backbones of **lay()** is
 define anonymous functions on the fly:
 
 ``` r
-drugs_with_NA %>%
- mutate(everused = lay(across(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
-#> # A tibble: 100 x 9
+drugs_with_NA |>
+ mutate(everused = lay(pick(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1           NA       0       0       0       0       0       0 FALSE   
@@ -154,7 +153,7 @@ drugs_with_NA %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 We can also apply many functions at once, as exemplified with another
@@ -163,27 +162,27 @@ dataset:
 ``` r
 data("world_bank_pop", package = "tidyr")  ## requires to have installed {tidyr}
 
-world_bank_pop %>%
-  filter(indicator == "SP.POP.TOTL") %>%
-  mutate(lay(across(matches("\\d")),
+world_bank_pop |>
+  filter(indicator == "SP.POP.TOTL") |>
+  mutate(lay(pick(matches("\\d")),
              ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))), .after = indicator)
-#> # A tibble: 264 x 23
-#>    country indicator    min   mean    max `2000` `2001` `2002` `2003` `2004`
-#>    <chr>   <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-#>  1 ABW     SP.POP.T… 9.09e4 1.00e5 1.05e5 9.09e4 9.29e4 9.50e4 9.70e4 9.87e4
-#>  2 AFG     SP.POP.T… 2.01e7 2.78e7 3.55e7 2.01e7 2.10e7 2.20e7 2.31e7 2.41e7
-#>  3 AGO     SP.POP.T… 1.64e7 2.25e7 2.98e7 1.64e7 1.70e7 1.76e7 1.82e7 1.89e7
-#>  4 ALB     SP.POP.T… 2.87e6 2.96e6 3.09e6 3.09e6 3.06e6 3.05e6 3.04e6 3.03e6
-#>  5 AND     SP.POP.T… 6.54e4 7.81e4 8.45e4 6.54e4 6.73e4 7.00e4 7.32e4 7.62e4
-#>  6 ARB     SP.POP.T… 2.84e8 3.46e8 4.14e8 2.84e8 2.90e8 2.96e8 3.02e8 3.09e8
-#>  7 ARE     SP.POP.T… 3.15e6 6.67e6 9.40e6 3.15e6 3.33e6 3.51e6 3.74e6 4.09e6
-#>  8 ARG     SP.POP.T… 3.71e7 4.06e7 4.43e7 3.71e7 3.75e7 3.79e7 3.83e7 3.87e7
-#>  9 ARM     SP.POP.T… 2.88e6 2.95e6 3.07e6 3.07e6 3.05e6 3.03e6 3.02e6 3.00e6
-#> 10 ASM     SP.POP.T… 5.52e4 5.70e4 5.93e4 5.75e4 5.82e4 5.87e4 5.91e4 5.93e4
-#> # … with 254 more rows, and 13 more variables: `2005` <dbl>, `2006` <dbl>,
-#> #   `2007` <dbl>, `2008` <dbl>, `2009` <dbl>, `2010` <dbl>, `2011` <dbl>,
-#> #   `2012` <dbl>, `2013` <dbl>, `2014` <dbl>, `2015` <dbl>, `2016` <dbl>,
-#> #   `2017` <dbl>
+#> # A tibble: 266 × 23
+#>    country indicator        min   mean    max `2000` `2001` `2002` `2003` `2004`
+#>    <chr>   <chr>          <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+#>  1 ABW     SP.POP.TOTL   8.91e4 9.81e4 1.05e5 8.91e4 9.07e4 9.18e4 9.27e4 9.35e4
+#>  2 AFE     SP.POP.TOTL   4.02e8 5.08e8 6.33e8 4.02e8 4.12e8 4.23e8 4.34e8 4.45e8
+#>  3 AFG     SP.POP.TOTL   1.95e7 2.73e7 3.56e7 1.95e7 1.97e7 2.10e7 2.26e7 2.36e7
+#>  4 AFW     SP.POP.TOTL   2.70e8 3.45e8 4.31e8 2.70e8 2.77e8 2.85e8 2.93e8 3.01e8
+#>  5 AGO     SP.POP.TOTL   1.64e7 2.26e7 3.02e7 1.64e7 1.69e7 1.75e7 1.81e7 1.88e7
+#>  6 ALB     SP.POP.TOTL   2.87e6 2.96e6 3.09e6 3.09e6 3.06e6 3.05e6 3.04e6 3.03e6
+#>  7 AND     SP.POP.TOTL   6.61e4 7.32e4 8.02e4 6.61e4 6.78e4 7.08e4 7.39e4 7.69e4
+#>  8 ARB     SP.POP.TOTL   2.87e8 3.52e8 4.24e8 2.87e8 2.94e8 3.00e8 3.07e8 3.13e8
+#>  9 ARE     SP.POP.TOTL   3.28e6 6.58e6 9.07e6 3.28e6 3.45e6 3.63e6 3.81e6 3.99e6
+#> 10 ARG     SP.POP.TOTL   3.71e7 4.05e7 4.40e7 3.71e7 3.75e7 3.79e7 3.83e7 3.87e7
+#> # ℹ 256 more rows
+#> # ℹ 13 more variables: `2005` <dbl>, `2006` <dbl>, `2007` <dbl>, `2008` <dbl>,
+#> #   `2009` <dbl>, `2010` <dbl>, `2011` <dbl>, `2012` <dbl>, `2013` <dbl>,
+#> #   `2014` <dbl>, `2015` <dbl>, `2016` <dbl>, `2017` <dbl>
 ```
 
 Since the other backbone of **lay()** is
@@ -196,32 +195,33 @@ column). This is why, in the last chunk of code, three different columns
 rowwise job must output a scalar (vector of length 1), or a tibble or
 data frame with a single row.
 
-We can apply a function that returns a vector of length &gt; 1 by
-turning such vector into a tibble using **as\_tibble\_row()** from
+We can apply a function that returns a vector of length \> 1 by turning
+such vector into a tibble using **as_tibble_row()** from
 [**{tibble}**](https://tibble.tidyverse.org/):
 
 ``` r
-world_bank_pop %>%
-  filter(indicator == "SP.POP.TOTL") %>%
-  mutate(lay(across(matches("\\d")),
+world_bank_pop |>
+  filter(indicator == "SP.POP.TOTL") |>
+  mutate(lay(pick(matches("\\d")),
              ~ as_tibble_row(quantile(.x, na.rm = TRUE))), .after = indicator)
-#> # A tibble: 264 x 25
-#>    country indicator   `0%`  `25%`  `50%`  `75%` `100%` `2000` `2001` `2002`
-#>    <chr>   <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-#>  1 ABW     SP.POP.T… 9.09e4 9.91e4 1.01e5 1.03e5 1.05e5 9.09e4 9.29e4 9.50e4
-#>  2 AFG     SP.POP.T… 2.01e7 2.44e7 2.76e7 3.15e7 3.55e7 2.01e7 2.10e7 2.20e7
-#>  3 AGO     SP.POP.T… 1.64e7 1.90e7 2.22e7 2.58e7 2.98e7 1.64e7 1.70e7 1.76e7
-#>  4 ALB     SP.POP.T… 2.87e6 2.90e6 2.94e6 3.02e6 3.09e6 3.09e6 3.06e6 3.05e6
-#>  5 AND     SP.POP.T… 6.54e4 7.64e4 7.90e4 8.26e4 8.45e4 6.54e4 6.73e4 7.00e4
-#>  6 ARB     SP.POP.T… 2.84e8 3.11e8 3.44e8 3.80e8 4.14e8 2.84e8 2.90e8 2.96e8
-#>  7 ARE     SP.POP.T… 3.15e6 4.21e6 7.28e6 8.98e6 9.40e6 3.15e6 3.33e6 3.51e6
-#>  8 ARG     SP.POP.T… 3.71e7 3.88e7 4.06e7 4.24e7 4.43e7 3.71e7 3.75e7 3.79e7
-#>  9 ARM     SP.POP.T… 2.88e6 2.90e6 2.93e6 3.00e6 3.07e6 3.07e6 3.05e6 3.03e6
-#> 10 ASM     SP.POP.T… 5.52e4 5.56e4 5.66e4 5.85e4 5.93e4 5.75e4 5.82e4 5.87e4
-#> # … with 254 more rows, and 15 more variables: `2003` <dbl>, `2004` <dbl>,
-#> #   `2005` <dbl>, `2006` <dbl>, `2007` <dbl>, `2008` <dbl>, `2009` <dbl>,
-#> #   `2010` <dbl>, `2011` <dbl>, `2012` <dbl>, `2013` <dbl>, `2014` <dbl>,
-#> #   `2015` <dbl>, `2016` <dbl>, `2017` <dbl>
+#> # A tibble: 266 × 25
+#>    country indicator       `0%`  `25%`  `50%`  `75%` `100%` `2000` `2001` `2002`
+#>    <chr>   <chr>          <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+#>  1 ABW     SP.POP.TOTL   8.91e4 9.38e4 9.86e4 1.03e5 1.05e5 8.91e4 9.07e4 9.18e4
+#>  2 AFE     SP.POP.TOTL   4.02e8 4.48e8 5.03e8 5.64e8 6.33e8 4.02e8 4.12e8 4.23e8
+#>  3 AFG     SP.POP.TOTL   1.95e7 2.38e7 2.69e7 3.13e7 3.56e7 1.95e7 1.97e7 2.10e7
+#>  4 AFW     SP.POP.TOTL   2.70e8 3.03e8 3.42e8 3.85e8 4.31e8 2.70e8 2.77e8 2.85e8
+#>  5 AGO     SP.POP.TOTL   1.64e7 1.89e7 2.21e7 2.59e7 3.02e7 1.64e7 1.69e7 1.75e7
+#>  6 ALB     SP.POP.TOTL   2.87e6 2.90e6 2.94e6 3.02e6 3.09e6 3.09e6 3.06e6 3.05e6
+#>  7 AND     SP.POP.TOTL   6.61e4 7.11e4 7.21e4 7.55e4 8.02e4 6.61e4 6.78e4 7.08e4
+#>  8 ARB     SP.POP.TOTL   2.87e8 3.15e8 3.51e8 3.87e8 4.24e8 2.87e8 2.94e8 3.00e8
+#>  9 ARE     SP.POP.TOTL   3.28e6 4.07e6 7.49e6 8.73e6 9.07e6 3.28e6 3.45e6 3.63e6
+#> 10 ARG     SP.POP.TOTL   3.71e7 3.88e7 4.05e7 4.21e7 4.40e7 3.71e7 3.75e7 3.79e7
+#> # ℹ 256 more rows
+#> # ℹ 15 more variables: `2003` <dbl>, `2004` <dbl>, `2005` <dbl>, `2006` <dbl>,
+#> #   `2007` <dbl>, `2008` <dbl>, `2009` <dbl>, `2010` <dbl>, `2011` <dbl>,
+#> #   `2012` <dbl>, `2013` <dbl>, `2014` <dbl>, `2015` <dbl>, `2016` <dbl>,
+#> #   `2017` <dbl>
 ```
 
 ## Alternatives to **lay()**
@@ -236,9 +236,9 @@ example about drugs usage.
 One solution is to simply do the following:
 
 ``` r
-drugs_full %>%
+drugs_full |>
   mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)
-#> # A tibble: 55,271 x 9
+#> # A tibble: 55,271 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -251,25 +251,25 @@ drugs_full %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 55,261 more rows
+#> # ℹ 55,261 more rows
 ```
 
 It is certainly very efficient from a computational point of view, but
 coding this way presents two main limitations:
 
--   you need to name all columns explicitly, which can be problematic
-    when dealing with many columns
--   you are stuck with expressing your task with logical and arithmetic
-    operators, which is not always sufficient
+- you need to name all columns explicitly, which can be problematic when
+  dealing with many columns
+- you are stuck with expressing your task with logical and arithmetic
+  operators, which is not always sufficient
 
 ### Alternative 2: 100% **{dplyr}**
 
 ``` r
-drugs%>%
-  rowwise() %>%
-  mutate(everused = any(c_across(-caseid))) %>%
+drugs |>
+  rowwise() |>
+  mutate(everused = any(c_across(-caseid))) |>
   ungroup()
-#> # A tibble: 100 x 9
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -282,10 +282,10 @@ drugs%>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
-It is easy to use as **c\_across()** turns its input into a vector and
+It is easy to use as **c_across()** turns its input into a vector and
 **rowwise()** implies that the vector only represents one row at a time.
 Yet, for now it remains quite slow on large datasets (see **Efficiency**
 below).
@@ -295,14 +295,14 @@ below).
 ``` r
 library(tidyr)  ## requires to have installed {tidyr}
 
-drugs %>%
-  pivot_longer(-caseid) %>%
-  group_by(caseid) %>%
-  mutate(everused = any(value)) %>%
-  ungroup() %>%
-  pivot_wider() %>%
+drugs |>
+  pivot_longer(-caseid) |>
+  group_by(caseid) |>
+  mutate(everused = any(value)) |>
+  ungroup() |>
+  pivot_wider() |>
   relocate(everused, .after = last_col())
-#> # A tibble: 100 x 9
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -315,7 +315,7 @@ drugs %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 Here the trick is to turn the rowwise problem into a column problem by
@@ -329,9 +329,9 @@ time and memory required to pivot the tables.
 ``` r
 library(purrr)  ## requires to have installed {purrr}
 
-drugs %>%
-  mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))
-#> # A tibble: 100 x 9
+drugs |>
+  mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -344,7 +344,7 @@ drugs %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 This is a perfectly fine solution and actually part of what one
@@ -356,9 +356,9 @@ a user perspective it is a little too geeky-scary.
 ``` r
 library(slider)   ## requires to have installed {slider}
 
-drugs %>%
-  mutate(everused = slide_vec(across(-caseid), any))
-#> # A tibble: 100 x 9
+drugs |>
+  mutate(everused = slide_vec(pick(-caseid), any))
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -371,7 +371,7 @@ drugs %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 The package [**{slider}**](https://davisvaughan.github.io/slider/) is a
@@ -396,19 +396,10 @@ library(data.table)  ## requires to have installed {data.table}
 drugs_dt <- data.table(drugs)
 
 drugs_dt[, ..I := .I]
-  drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
-```
-
-This is a solution for those using **{data.table}**. It is not
-particularly efficient, nor particularly easy to remember for those who
-do not program frequently using **{data.table}**.
-
-### Alternative 7: **apply()**
-
-``` r
-drugs %>%
-  mutate(everused = apply(across(-caseid), 1L, any))
-#> # A tibble: 100 x 9
+drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
+drugs_dt[, ..I := NULL]
+as_tibble(drugs_dt)
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -421,7 +412,32 @@ drugs %>%
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
+```
+
+This is a solution for those using **{data.table}**. It is not
+particularly efficient, nor particularly easy to remember for those who
+do not program frequently using **{data.table}**.
+
+### Alternative 7: **apply()**
+
+``` r
+drugs |>
+  mutate(everused = apply(pick(-caseid), 1L, any))
+#> # A tibble: 100 × 9
+#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
+#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
+#>  1 1            0       0       0       0       0       0       0 FALSE   
+#>  2 2            0       0       0       0       0       0       0 FALSE   
+#>  3 3            0       0       0       0       0       0       0 FALSE   
+#>  4 4            0       0       0       0       0       0       0 FALSE   
+#>  5 5            0       0       0       0       0       0       0 FALSE   
+#>  6 6            0       0       0       0       0       0       0 FALSE   
+#>  7 7            0       0       0       0       0       0       0 FALSE   
+#>  8 8            0       0       0       0       0       0       0 FALSE   
+#>  9 9            0       0       0       0       0       0       1 TRUE    
+#> 10 10           0       0       0       0       0       0       0 FALSE   
+#> # ℹ 90 more rows
 ```
 
 This is the base R solution. Very efficient and actually part of the
@@ -441,7 +457,7 @@ for (i in seq_len(nrow(drugs))) {
 }
 
 drugs
-#> # A tibble: 100 x 9
+#> # A tibble: 100 × 9
 #>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
 #>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
 #>  1 1            0       0       0       0       0       0       0 FALSE   
@@ -454,7 +470,7 @@ drugs
 #>  8 8            0       0       0       0       0       0       0 FALSE   
 #>  9 9            0       0       0       0       0       0       1 TRUE    
 #> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # … with 90 more rows
+#> # ℹ 90 more rows
 ```
 
 This is another base R solution, which does not involve any external
@@ -463,7 +479,7 @@ package. It is not very pretty, nor particularly efficient.
 ### Other alternatives?
 
 There are probably other ways. If you think of a nice one, please leave
-an issue!
+an issue and we will add it here!
 
 ## Efficiency
 
@@ -483,18 +499,19 @@ quite efficient!
 
 <img src="https://github.com/courtiol/lay/raw/master/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
-This package has been created by **@romainfrancois** as a reply to a
-tweet I posted under **@rdataberlin** in February 2020. At the time I
-was exploring different ways to perform rowwise jobs in R and I was
-experimenting with various ideas on how to exploit the fact that the
-newly introduced function **across()** from **{dplyr}** creates tibbles
-on which on can easily apply a function. Romain came up with **lay()**
-as the better solution making good use of **{rlang}** & **{vctrs}**.
+The first draft of this package has been created by **@romainfrancois**
+as a reply to a tweet I posted under **@rdataberlin** in February 2020.
+At the time I was exploring different ways to perform rowwise jobs in R
+and I was experimenting with various ideas on how to exploit the fact
+that the newly introduced function **across()** from **{dplyr}** creates
+tibbles on which on can easily apply a function. Romain came up with
+**lay()** as the better solution making good use of **{rlang}** &
+**{vctrs}**.
 
 The verb **lay()** never made it to be integrated within **{dplyr}**
 and, so far, I still find **lay()** superior than most alternatives,
-which is why I decided to revive this package in November 2020.
+which is why I decided to maintain this package.
 
 In short, I deserve little credit and instead you should feel free to
 buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his
-[github profile](https://github.com/romainfrancois) as I do.
+[github profile](https://github.com/romainfrancois).
