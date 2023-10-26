@@ -1,6 +1,6 @@
 Package: lay
 Title: Simple but Efficient Rowwise Jobs
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Alexandre", "Courtiol", email = "alexandre.courtiol@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0637-2959")),
     person("Romain", "Francois", role = c("aut"), comment = c(ORCID = "0000-0002-2444-4226"))
