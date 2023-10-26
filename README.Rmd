@@ -21,7 +21,6 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
-[![R build status](https://github.com/courtiol/lay/workflows/R-CMD-check/badge.svg)](https://github.com/courtiol/lay)
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
