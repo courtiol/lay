@@ -53,10 +53,10 @@ In this dataset, all columns but `caseid` record the use of pain relievers for n
 
 For each drug there is a certain number of users and non-users:
 ```{r drugs_full_summary}
-drugs_full %>%
-  pivot_longer(-caseid, names_to = "drug", values_to = "used") %>%
-  count(drug, used) %>%
-  mutate(used = if_else(used == 1, "have_used", "have_not_used")) %>%
+drugs_full |>
+  pivot_longer(-caseid, names_to = "drug", values_to = "used") |>
+  count(drug, used) |>
+  mutate(used = if_else(used == 1, "have_used", "have_not_used")) |>
   pivot_wider(names_from = used, values_from = n)
 ```
 
@@ -71,38 +71,38 @@ drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
 
 benchmark1 <- mark(
   vectorized = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
   lay = {
-    drugs_full %>%
-      select(-caseid) %>%
-      mutate(everused = lay(., any))},
+    drugs_full |>
+      select(-caseid) |>
+      mutate(everused = lay(across(everything()), any))},
   lay_alternative = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
   c_across = {
-    drugs_full %>%
-      rowwise() %>%
-      mutate(everused = any(c_across(-caseid))) %>%
+    drugs_full |>
+      rowwise() |>
+      mutate(everused = any(c_across(-caseid))) |>
       ungroup()},
   pivot_pivot = {
-    drugs_full %>%
-      pivot_longer(-caseid) %>%
-      group_by(caseid) %>%
-      mutate(everused = any(value)) %>%
-      ungroup() %>%
+    drugs_full |>
+      pivot_longer(-caseid) |>
+      group_by(caseid) |>
+      mutate(everused = any(value)) |>
+      ungroup() |>
       pivot_wider()},
   pmap = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
   slider = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = slide_vec(across(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = apply(across(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs_full))
@@ -116,13 +116,13 @@ benchmark1 <- mark(
 
 Here are the results of this first benchmark:
 ```{r bench_results1}
-benchmark1 %>%
+benchmark1 |>
   arrange(median)
 ```
 
 ```{r bench_plot1, fig.width=7}
-benchmark1 %>%
-  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
+benchmark1 |>
+  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) |>
   plot()
 ```
 
@@ -137,38 +137,38 @@ drugs_dt <- data.table(drugs) ## coercion to data.table
 
 benchmark2 <- mark(
   vectorized = {
-    drugs %>%
+    drugs |>
       mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
   lay = {
-    drugs %>%
-      select(-caseid) %>%
-      mutate(everused = lay(., any))},
+    drugs |>
+      select(-caseid) |>
+      mutate(everused = lay(across(everything()), any))},
   lay_alternative = {
-    drugs %>%
+    drugs |>
       mutate(everused = lay(across(-caseid), any, .method = "tidy"))},
   c_across = {
-    drugs %>%
-      rowwise() %>%
-      mutate(everused = any(c_across(-caseid))) %>%
+    drugs |>
+      rowwise() |>
+      mutate(everused = any(c_across(-caseid))) |>
       ungroup()},
   pivot_pivot = {
-    drugs %>%
-      pivot_longer(-caseid) %>%
-      group_by(caseid) %>%
-      mutate(everused = any(value)) %>%
-      ungroup() %>%
+    drugs |>
+      pivot_longer(-caseid) |>
+      group_by(caseid) |>
+      mutate(everused = any(value)) |>
+      ungroup() |>
       pivot_wider()},
   pmap = {
-    drugs %>%
+    drugs |>
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
   slider = {
-    drugs %>%
+    drugs |>
       mutate(everused = slide_vec(across(-caseid), any))},
   data.table = {
     drugs_dt[, ..I := .I]
     drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
-    drugs %>%
+    drugs |>
       mutate(everused = apply(across(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs))
@@ -182,13 +182,13 @@ benchmark2 <- mark(
 
 Here are the results of this second benchmark:
 ```{r bench_results2}
-benchmark2 %>%
+benchmark2 |>
   arrange(median)
 ```
 
 ```{r bench_plot2, fig.width=7}
-benchmark2 %>%
-  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
+benchmark2 |>
+  mutate(expression = fct_reorder(as.character(expression), median, .desc = TRUE)) |>
   plot(type = "violin")
 ```
 

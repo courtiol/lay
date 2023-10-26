@@ -77,44 +77,49 @@
 #' if (require("dplyr")) {
 #'
 #'   # apply any() to each row
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(everused = lay(across(-caseid), any))
 #'
+#'   # apply any() to each row using all columns
+#'   drugs |>
+#'     select(-caseid) |>
+#'     mutate(everused = lay(across(everything()), any))
+#'
 #'   # a workaround would be to use `rowSums`
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(everused = rowSums(across(-caseid)) > 0)
 #'
 #'   # but we can lay any function taking a vector as input, e.g. median
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(used_median = lay(across(-caseid), median))
 #'
 #'   # you can pass arguments to the function
 #'   drugs_with_NA <- drugs
 #'   drugs_with_NA[1, 2] <- NA
 #'
-#'   drugs_with_NA %>%
+#'   drugs_with_NA |>
 #'     mutate(everused = lay(across(-caseid), any))
-#'   drugs_with_NA %>%
+#'   drugs_with_NA |>
 #'     mutate(everused = lay(across(-caseid), any, na.rm = TRUE))
 #'
 #'   # you can lay the output into a 1-row tibble (or data.frame)
 #'   # if you want to apply multiple functions
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(lay(across(-caseid),
 #'              ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 #'
 #'   # note that naming the output prevent the automatic splicing and you obtain a df-column
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(usage = lay(across(-caseid),
 #'               ~ tibble(drugs_taken = sum(.x), drugs_not_taken = sum(.x == 0))))
 #'
 #'   # if your function returns a vector longer than a scalar, you should turn the output
 #'   # into a tibble, which is the job of as_tibble_row()
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(lay(across(-caseid), ~ as_tibble_row(quantile(.x))))
 #'
 #'   # note that you could also wrap the output in a list and name it to obtain a list-column
-#'   drugs %>%
+#'   drugs |>
 #'     mutate(usage_quantiles = lay(across(-caseid), ~ list(quantile(.x))))
 #' }
 #'

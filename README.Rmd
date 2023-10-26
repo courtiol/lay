@@ -68,7 +68,7 @@ This is how you would achieve our goal using **lay()**:
 ```{r lay}
 library(dplyr, warn.conflicts = FALSE)  ## requires to have installed {dplyr}
 
-drugs_full %>%
+drugs_full |>
   mutate(everused = lay(across(-caseid), any))
 ```
 
@@ -82,19 +82,19 @@ Our function **lay()** is quite flexible! For example, you can pass argument(s) 
 drugs_with_NA <- drugs     ## create a copy of the dataset
 drugs_with_NA[1, 2] <- NA  ## introduce a missing value
 
-drugs_with_NA %>%
-  mutate(everused = lay(across(-caseid), any)) %>% ## without additional argument
+drugs_with_NA |>
+  mutate(everused = lay(across(-caseid), any)) |> ## without additional argument
   slice(1)  ## keep first row only
   
-drugs_with_NA %>%
-  mutate(everused = lay(across(-caseid), any, na.rm = TRUE)) %>%  ## with additional argument
+drugs_with_NA |>
+  mutate(everused = lay(across(-caseid), any, na.rm = TRUE)) |>  ## with additional argument
   slice(1)
 ```
 
 Since one of the backbones of **lay()** is  [**{rlang}**](https://rlang.r-lib.org), you can use the so-called [*lambda* syntax](https://rlang.r-lib.org/reference/as_function.html) to define anonymous functions on the fly:
 
 ```{r lambda}
-drugs_with_NA %>%
+drugs_with_NA |>
  mutate(everused = lay(across(-caseid), ~ any(.x, na.rm = TRUE))) ## same as above, different syntax
 ```
 
@@ -103,8 +103,8 @@ We can also apply many functions at once, as exemplified with another dataset:
 ```{r worldbank}
 data("world_bank_pop", package = "tidyr")  ## requires to have installed {tidyr}
 
-world_bank_pop %>%
-  filter(indicator == "SP.POP.TOTL") %>%
+world_bank_pop |>
+  filter(indicator == "SP.POP.TOTL") |>
   mutate(lay(across(matches("\\d")),
              ~ tibble(min = min(.x), mean = mean(.x), max = max(.x))), .after = indicator)
 ```
@@ -116,8 +116,8 @@ Since the other backbone of **lay()** is [**{vctrs}**](https://vctrs.r-lib.org),
 We can apply a function that returns a vector of length > 1 by turning such vector into a tibble using **as_tibble_row()** from [**{tibble}**](https://tibble.tidyverse.org/):
 
 ```{r worldbank2}
-world_bank_pop %>%
-  filter(indicator == "SP.POP.TOTL") %>%
+world_bank_pop |>
+  filter(indicator == "SP.POP.TOTL") |>
   mutate(lay(across(matches("\\d")),
              ~ as_tibble_row(quantile(.x, na.rm = TRUE))), .after = indicator)
 ```
@@ -134,7 +134,7 @@ Let's now consider, in turns, these alternatives -- sticking to our example abou
 
 One solution is to simply do the following:
 ```{r vector}
-drugs_full %>%
+drugs_full |>
   mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)
 ```
 It is certainly very efficient from a computational point of view, but coding this way presents two main limitations:
@@ -146,9 +146,9 @@ It is certainly very efficient from a computational point of view, but coding th
 ### Alternative 2: 100% **{dplyr}**
 
 ```{r dplyr}
-drugs%>%
-  rowwise() %>%
-  mutate(everused = any(c_across(-caseid))) %>%
+drugs |>
+  rowwise() |>
+  mutate(everused = any(c_across(-caseid))) |>
   ungroup()
 ```
 It is easy to use as **c_across()** turns its input into a vector and **rowwise()** implies that the
@@ -160,12 +160,12 @@ vector only represents one row at a time. Yet, for now it remains quite slow on 
 ```{r, }
 library(tidyr)  ## requires to have installed {tidyr}
 
-drugs %>%
-  pivot_longer(-caseid) %>%
-  group_by(caseid) %>%
-  mutate(everused = any(value)) %>%
-  ungroup() %>%
-  pivot_wider() %>%
+drugs |>
+  pivot_longer(-caseid) |>
+  group_by(caseid) |>
+  mutate(everused = any(value)) |>
+  ungroup() |>
+  pivot_wider() |>
   relocate(everused, .after = last_col())
 ```
 Here the trick is to turn the rowwise problem into a column problem by pivoting the values and then
@@ -179,7 +179,7 @@ to pivot the tables.
 ```{r purrr}
 library(purrr)  ## requires to have installed {purrr}
 
-drugs %>%
+drugs |>
   mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))
 ```
 This is a perfectly fine solution and actually part of what one implementation of **lay()** relies on
@@ -191,7 +191,7 @@ This is a perfectly fine solution and actually part of what one implementation o
 ```{r slider}
 library(slider)   ## requires to have installed {slider}
 
-drugs %>%
+drugs |>
   mutate(everused = slide_vec(across(-caseid), any))
 ```
 The package [**{slider}**](https://davisvaughan.github.io/slider/) is a powerful package which provides several *sliding window* functions.
@@ -216,7 +216,7 @@ easy to remember for those who do not program frequently using **{data.table}**.
 ### Alternative 7: **apply()**
 
 ```{r apply}
-drugs %>%
+drugs |>
   mutate(everused = apply(across(-caseid), 1L, any))
 ```
 This is the base R solution. Very efficient and actually part of the default method used in **lay()**.
@@ -258,35 +258,35 @@ drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
 
 benchmark1 <- bench::mark(
   vectorized = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)},
   lay = {
-    drugs_full %>%
-      select(-caseid) %>%
-      mutate(everused = lay(., any))},
+    drugs_full |>
+      select(-caseid) |>
+      mutate(everused = lay(across(everything()), any))},
   c_across = {
-    drugs_full %>%
-      rowwise() %>%
-      mutate(everused = any(c_across(-caseid))) %>%
+    drugs_full |>
+      rowwise() |>
+      mutate(everused = any(c_across(-caseid))) |>
       ungroup()},
   pivot_pivot = {
-    drugs_full %>%
-      pivot_longer(-caseid) %>%
-      group_by(caseid) %>%
-      mutate(everused = any(value)) %>%
-      ungroup() %>%
+    drugs_full |>
+      pivot_longer(-caseid) |>
+      group_by(caseid) |>
+      mutate(everused = any(value)) |>
+      ungroup() |>
       pivot_wider()},
   pmap = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = pmap_lgl(across(-caseid), ~ any(...)))},
   slider = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = slide_lgl(across(-caseid), any))},
   data.table = {
     drugs_full_dt[, ..I := .I]
     drugs_full_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]},
   apply = {
-    drugs_full %>%
+    drugs_full |>
       mutate(everused = apply(across(-caseid), 1, any))},
   'for' = {
     everused <- logical(nrow(drugs_full))
@@ -296,8 +296,8 @@ benchmark1 <- bench::mark(
   time_unit = "ms",
   check = FALSE
   )
-benchmark1 %>%
-  mutate(expression = forcats::fct_reorder(as.character(expression), median, .desc = TRUE)) %>%
+benchmark1 |>
+  mutate(expression = forcats::fct_reorder(as.character(expression), median, .desc = TRUE)) |>
   plot()
 ```
 
