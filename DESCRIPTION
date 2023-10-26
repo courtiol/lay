@@ -9,6 +9,15 @@ Description: create efficiently new column(s) in a data frame (including tibble)
 License: MIT + file LICENSE
 URL: https://github.com/courtiol/lay
 BugReports: https://github.com/courtiol/lay/issues/
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 2.10)
+Imports: 
+    rlang,
+    purrr,
+    vctrs,
+    tibble
 Suggests: 
     bench,
     covr,
@@ -22,15 +31,6 @@ Suggests:
     slider,
     testthat (>= 2.1.0),
     tidyr
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
-Imports: 
-    rlang,
-    purrr,
-    vctrs,
-    tibble
-Depends: 
-    R (>= 2.10)
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
