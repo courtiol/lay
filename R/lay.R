@@ -119,13 +119,18 @@
 #' }
 #'
 #' @export
-lay <- function(.data, .fn, ..., .method = "apply") {
-    fn <- as_function(.fn)
-    if (.method == "tidy") {
-      args <- list2(...)
-      bits <- pmap(.data, function(...) exec(fn, vec_c(...), !!!args))
-    } else if (.method == "apply") {
-      bits <- apply(.data, 1L, fn, ...)
-    } else stop(".method input unknown")
-    vec_c(!!!bits)
+lay <- function(.data, .fn, ..., .method = c("apply", "tidy")) {
+
+  method <- match.arg(.method)[1]
+
+  fn <- as_function(.fn)
+
+  if (method == "tidy") {
+    args <- list2(...)
+    bits <- pmap(.data, function(...) exec(fn, vec_c(...), !!!args))
+  } else if (method == "apply") {
+    bits <- apply(.data, 1L, fn, ...)
+  } else stop(".method input unknown")
+
+  vec_c(!!!bits)
 }
