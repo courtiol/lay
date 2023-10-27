@@ -30,6 +30,8 @@ Suggests:
     rmarkdown,
     slider,
     testthat (>= 2.1.0),
-    tidyr
+    tidyr,
+    spelling
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Language: en-US

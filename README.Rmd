@@ -36,7 +36,7 @@ Instead `lay()` aims at reaching a sweet spot between simplicity and efficiency.
 The function has been specifically designed to be combined with functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel as if 
 it was part of it (but you can use `lay()` without [**{dplyr}**](https://dplyr.tidyverse.org/)).
 
-There is hardly any code behind `lay()` (it can be coded in 3 lines), so this package may just be an interim solution before an established package fulfils the need... Time will tell.
+There is hardly any code behind `lay()` (it can be coded in 3 lines), so this package may just be an interim solution before an established package fulfills the need... Time will tell.
 
 ### Installation
 

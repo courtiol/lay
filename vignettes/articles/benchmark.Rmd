@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 
 The goal of this article is to compare the performances of `lay()` to alternatives described [here](https://courtiol.github.io/lay/articles/alternatives.html).
 As you will see, the code using `lay()` is quite efficient.
-The only alternative that is clearly more efficient is the one labelled below "*vectorized*".
+The only alternative that is clearly more efficient is the one labeled below "*vectorized*".
 Unfortunately, such a vectorized approach imply to refer explicitly to all column names which data are used.
 Furthermore, such a vectorized approach is not applicable generally, as it can only deal with logical
 and arithmetic operators and does allow the use of other types of functions.

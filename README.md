@@ -32,7 +32,7 @@ as if it was part of it (but you can use `lay()` without
 
 There is hardly any code behind `lay()` (it can be coded in 3 lines), so
 this package may just be an interim solution before an established
-package fulfils the need… Time will tell.
+package fulfills the need… Time will tell.
 
 ### Installation
 
