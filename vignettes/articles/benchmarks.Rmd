@@ -57,9 +57,11 @@ drugs_full |>
 
 In this Article, we compare the efficiency of alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
 
-## Benchmarks
+We will run benchmarks on the dataset `drugs_full` and its `r nrow(drugs_full)` rows, as well as on a subset of this data called `drugs` that only contains `r nrow(drugs)` rows.
 
-Let's compare the running time of different methods to do this job:
+## Benchmarks on the full dataset (`r nrow(drugs_full)` rows)
+
+Let's compare the running time of different methods to do this job on the full dataset:
 
 ```{r bench_run1}
 drugs_full_dt <- data.table(drugs_full) ## coercion to data.table
@@ -109,7 +111,7 @@ benchmark1 <- mark(
   )
 ```
 
-Here are the results of this first benchmark:
+Here are the results of this first series of benchmarks:
 ```{r bench_results1}
 benchmark1 |>
   arrange(median)
@@ -123,9 +125,9 @@ benchmark1 |>
 
 Note that the x-axis of the plot is on a logarithmic scale.
 
-## Benchmark on smaller dataset
+## Benchmarks on a subset of the data (`r nrow(drugs)` rows)
 
-Let's repeat our benchmark using a smaller dataset:
+Let's repeat our benchmarks using a only a subset of the original dataset:
 
 ```{r bench_run2}
 drugs_dt <- data.table(drugs) ## coercion to data.table
@@ -175,7 +177,7 @@ benchmark2 <- mark(
   )
 ```
 
-Here are the results of this second benchmark:
+Here are the results of this second series of benchmarks:
 ```{r bench_results2}
 benchmark2 |>
   arrange(median)
