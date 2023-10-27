@@ -157,12 +157,15 @@ of pain relievers for non medical purpose.</p>
 create a new variable named <code>everused</code> which indicates if
 each respondent has used any of the considered pain relievers for non
 medical purpose or not.</p>
+<p>We will run benchmarks on the dataset <code>drugs_full</code> and its
+55271 rows, as well as on a subset of this data called
+<code>drugs</code> that only contains 100 rows.</p>
 </div>
 <div class="section level2">
-<h2 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
+<h2 id="benchmarks-on-the-full-dataset-55271-rows">Benchmarks on the full dataset (55271 rows)<a class="anchor" aria-label="anchor" href="#benchmarks-on-the-full-dataset-55271-rows"></a>
 </h2>
-<p>Let’s compare the running time of different methods to do this
-job:</p>
+<p>Let’s compare the running time of different methods to do this job on
+the full dataset:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugs_full_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">drugs_full</span><span class="op">)</span> <span class="co">## coercion to data.table</span></span>
 <span></span>
@@ -211,23 +214,23 @@ job:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Some expressions had a GC in every iteration; so filtering is</span></span>
 <span><span class="co">#&gt; disabled.</span></span></code></pre></div>
-<p>Here are the results of this first benchmark:</p>
+<p>Here are the results of this first series of benchmarks:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">median</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">#&gt;    expression           min   median `itr/sec` mem_alloc `gc/sec`</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized          3.10     3.14  305.        2.74MB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply             114.     116.      8.59      4.01MB     1.72</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lay               144.     148.      6.55      5.49MB     1.31</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pivot_pivot       312.     319.      3.11     62.38MB     1.24</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> pmap              383.     385.      2.59    251.29KB     3.10</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> lay_alternative  <span style="text-decoration: underline;">1</span>545.    <span style="text-decoration: underline;">1</span>550.      0.641     15.3MB     1.92</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> data.table       <span style="text-decoration: underline;">4</span>047.    <span style="text-decoration: underline;">4</span>054.      0.240     3.04MB     2.01</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> slider           <span style="text-decoration: underline;">4</span>664.    <span style="text-decoration: underline;">4</span>691.      0.212   915.15KB     2.12</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              <span style="text-decoration: underline;">9</span>249.    <span style="text-decoration: underline;">9</span>322.      0.107   271.48KB     2.34</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        <span style="text-decoration: underline;">91</span>954.   <span style="text-decoration: underline;">92</span>042.      0.010<span style="text-decoration: underline;">8</span>  424.32MB     1.03</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized          2.60     2.63  364.        2.74MB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply              95.9     97.6    10.2       4.01MB     4.08</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lay               120.     122.      7.95      5.49MB     1.59</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pivot_pivot       260.     263.      3.77     62.38MB     1.51</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> pmap              316.     319.      3.11    251.29KB     2.49</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> lay_alternative  <span style="text-decoration: underline;">1</span>355.    <span style="text-decoration: underline;">1</span>379.      0.729     15.3MB     1.90</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> data.table       <span style="text-decoration: underline;">3</span>373.    <span style="text-decoration: underline;">3</span>380.      0.287     3.04MB     2.53</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> slider           <span style="text-decoration: underline;">3</span>962.    <span style="text-decoration: underline;">3</span>977.      0.251   915.15KB     2.40</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              <span style="text-decoration: underline;">7</span>815.    <span style="text-decoration: underline;">7</span>868.      0.126   271.73KB     2.60</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        <span style="text-decoration: underline;">79</span>215.   <span style="text-decoration: underline;">81</span>526.      0.012<span style="text-decoration: underline;">3</span>  424.32MB     1.08</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span>, <span class="va">median</span>, .desc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -236,9 +239,10 @@ job:</p>
 <p>Note that the x-axis of the plot is on a logarithmic scale.</p>
 </div>
 <div class="section level2">
-<h2 id="benchmark-on-smaller-dataset">Benchmark on smaller dataset<a class="anchor" aria-label="anchor" href="#benchmark-on-smaller-dataset"></a>
+<h2 id="benchmarks-on-a-subset-of-the-data-100-rows">Benchmarks on a subset of the data (100 rows)<a class="anchor" aria-label="anchor" href="#benchmarks-on-a-subset-of-the-data-100-rows"></a>
 </h2>
-<p>Let’s repeat our benchmark using a smaller dataset:</p>
+<p>Let’s repeat our benchmarks using a only a subset of the original
+dataset:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugs_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">drugs</span><span class="op">)</span> <span class="co">## coercion to data.table</span></span>
 <span></span>
@@ -285,23 +289,23 @@ job:</p>
 <span>  time_unit <span class="op">=</span> <span class="st">"ms"</span>,</span>
 <span>  check <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p>Here are the results of this second benchmark:</p>
+<p>Here are the results of this second series of benchmarks:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">median</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">#&gt;    expression         min median `itr/sec` mem_alloc `gc/sec`</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized        1.22   1.30    760.      7.33KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply             3.38   3.42    286.     16.92KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> pmap              3.93   3.96    251.      9.91KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> lay               5.52   5.71    174.     27.12KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> lay_alternative   6.04   6.11    162.     38.05KB     5.58</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> data.table        7.93   8.32    120.     67.66KB     4.15</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> slider           11.7   12.0      82.9    11.18KB     2.86</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> pivot_pivot      20.9   21.3      46.9   189.23KB     1.62</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              19.7   21.5      46.2    17.74KB     3.30</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        162.   163.        6.15  794.53KB     1.87</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized        1.07   1.08    915.      7.33KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply             2.70   2.83    352.     16.92KB    12.1 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> pmap              3.27   3.33    299.      9.91KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> lay               4.70   4.78    208.     27.12KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> lay_alternative   4.89   5.08    198.     38.05KB     6.83</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> data.table        6.90   6.97    143.     67.66KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> slider            9.29   9.94    101.     11.18KB     3.47</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> for              16.4   17.3      57.8    17.74KB     1.99</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> pivot_pivot      17.1   17.7      56.8   189.23KB     1.96</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        135.   137.        7.30  794.53KB     2.22</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span>, <span class="va">median</span>, .desc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
