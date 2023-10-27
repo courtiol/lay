@@ -1,19 +1,19 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# <img src="inst/figures/logo.png" align="right" height="138" /> **{lay}**
+# <img src="man/figures/logo.png" align="right" height="138" /> **{lay}**
 
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
-## An R package for a simple and efficient implementation of rowwise jobs
+## An R package for simple but efficient rowwise jobs
 
 ### Why **{lay}**?
 
@@ -25,6 +25,10 @@ inefficient, or both.
 
 Instead `lay()` – the only function of the package **{lay}** – aims at
 reaching a sweet spot between simplicity and efficiency.
+
+The function `lay()` is intended to be used to apply a function on each
+row of a data frame or tibble, independently, and across multiple
+columns containing values of the same class (e.g. all numeric).
 
 The function has been specifically designed to be combined with
 functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel
@@ -356,7 +360,7 @@ This is a perfectly fine solution and actually part of what one
 implementation of `lay()` relies on (if `.method = "tidy"`), but from a
 user perspective it is a little too geeky-scary.
 
-#### Alternative 5: [**{slider}**](https://davisvaughan.github.io/slider/)
+#### Alternative 5: [**{slider}**](https://slider.r-lib.org/)
 
 ``` r
 library(slider)   ## requires to have installed {slider}
@@ -379,11 +383,11 @@ drugs |>
 #> # ℹ 90 more rows
 ```
 
-The package [**{slider}**](https://davisvaughan.github.io/slider/) is a
-powerful package which provides several *sliding window* functions. It
-can be used to perform rowwise operations and is quite similar to
-**{lay}** in terms syntax. It is however not as efficient as **{lay}**
-and I am not sure it supports the automatic splicing demonstrated above.
+The package [**{slider}**](https://slider.r-lib.org/) is a powerful
+package which provides several *sliding window* functions. It can be
+used to perform rowwise operations and is quite similar to **{lay}** in
+terms syntax. It is however not as efficient as **{lay}** and I am not
+sure it supports the automatic splicing demonstrated above.
 
 #### Alternative 6: [**{data.table}**](https://rdatatable.gitlab.io/data.table/)
 
@@ -484,10 +488,11 @@ an issue and we will add it here!
 
 Here are the results of a benchmark comparing alternative
 implementations for our simple rowwise job on a larger dataset with 8
-columns and 55271 rows (see vignette “benchmark” for details and more
-tests):
+columns and 55271 rows (see
+[benchmark](https://courtiol.github.io/lay/articles/benchmark.html) for
+details and more tests):
 
-<img src=".github/pics/README-bench_run1-1.png" width="70%" style="display: block; margin: auto;" />
+<img src="man/figures/bench_run1-1.png" width="70%" style="display: block; margin: auto;" />
 
 Note that the x-axis of the plot is on a logarithmic scale.
 
