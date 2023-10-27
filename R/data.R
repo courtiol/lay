@@ -25,7 +25,7 @@
 #'     Center for Behavioral Health Statistics and Quality.
 #'     National Survey on Drug Use and Health, 2014.
 #'     Ann Arbor, MI: Inter-university Consortium for Political and Social Research (distributor), 2016-03-22.
-#'     \url{https://doi.org/10.3886/ICPSR36361.v1}
+#'     \doi{https://doi.org/10.3886/ICPSR36361.v1}
 #'
 #' @aliases drugs drugs_full
 #' @name drugs
