@@ -1,4 +1,4 @@
-#' Apply a function within each row.
+#' Apply a function within each row
 #'
 #' Create efficiently new column(s) in data frame (including tibble) by applying a function one row
 #' at a time.

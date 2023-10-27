@@ -2,7 +2,7 @@
 % Please edit documentation in R/lay.R
 \name{lay}
 \alias{lay}
-\title{Apply a function within each row.}
+\title{Apply a function within each row}
 \usage{
 lay(.data, .fn, ..., .method = c("apply", "tidy"))
 }
