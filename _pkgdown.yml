@@ -2,3 +2,17 @@ url: https://courtiol.github.io/lay/
 template:
   bootstrap: 5
 
+reference:
+- title: Verb
+  desc: >
+    The main verb of the package:
+  contents:
+  - lay
+
+- title: Data
+  desc: >
+    Some datasets to illustrate functionalities:
+  contents:
+  - drugs
+  - drugs_full
+

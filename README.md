@@ -36,10 +36,9 @@ package fulfils the need… Time will tell.
 
 ### Installation
 
-You can install a development version of **{lay}** with:
+You can install the development version of **{lay}** with:
 
 ``` r
-# install.packages("remotes")
 remotes::install_github("courtiol/lay")
 ```
 
@@ -193,14 +192,14 @@ Since the other backbone of `lay()` is
 [**{vctrs}**](https://vctrs.r-lib.org), the splicing happens
 automatically (unless the output of the call is used to create a named
 column). This is why, in the last chunk of code, three different columns
-(*min*, *mean* and *max*) where directly created.
+(*min*, *mean* and *max*) are directly created.
 
 **Important:** when using `lay()` the function you want to use for the
 rowwise job must output a scalar (vector of length 1), or a tibble or
 data frame with a single row.
 
 We can apply a function that returns a vector of length \> 1 by turning
-such vector into a tibble using `as_tibble_row()` from
+such a vector into a tibble using `as_tibble_row()` from
 [**{tibble}**](https://tibble.tidyverse.org/):
 
 ``` r
@@ -228,291 +227,22 @@ world_bank_pop |>
 #> #   `2017` <dbl>
 ```
 
-### Alternatives to `lay()`
-
-Of course, there are many alternatives to perform rowwise jobs.
-
-Let’s now consider, in turns, these alternatives – sticking to our
-example about drugs usage.
-
-#### Alternative 1: vectorized solution
-
-One solution is to simply do the following:
-
-``` r
-drugs_full |>
-  mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)
-#> # A tibble: 55,271 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 55,261 more rows
-```
-
-It is certainly very efficient from a computational point of view, but
-coding this way presents two main limitations:
-
-- you need to name all columns explicitly, which can be problematic when
-  dealing with many columns
-- you are stuck with expressing your task with logical and arithmetic
-  operators, which is not always sufficient
-
-#### Alternative 2: 100% [**{dplyr}**](https://dplyr.tidyverse.org/)
-
-``` r
-drugs |>
-  rowwise() |>
-  mutate(everused = any(c_across(-caseid))) |>
-  ungroup()
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-It is easy to use as `c_across()` turns its input into a vector and
-`rowwise()` implies that the vector only represents one row at a time.
-Yet, for now it remains quite slow on large datasets (see **Efficiency**
-below).
-
-#### Alternative 3: [**{tidyr}**](https://tidyr.tidyverse.org/)
-
-``` r
-library(tidyr)  ## requires to have installed {tidyr}
-
-drugs |>
-  pivot_longer(-caseid) |>
-  group_by(caseid) |>
-  mutate(everused = any(value)) |>
-  ungroup() |>
-  pivot_wider() |>
-  relocate(everused, .after = last_col())
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-Here the trick is to turn the rowwise problem into a column problem by
-pivoting the values and then pivoting the results back. Many find that
-this involves a little too much intellectual gymnastic. It is also not
-particularly efficient on large dataset both in terms of computation
-time and memory required to pivot the tables.
-
-#### Alternative 4: [**{purrr}**](https://purrr.tidyverse.org/)
-
-``` r
-library(purrr)  ## requires to have installed {purrr}
-
-drugs |>
-  mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-This is a perfectly fine solution and actually part of what one
-implementation of `lay()` relies on (if `.method = "tidy"`), but from a
-user perspective it is a little too geeky-scary.
-
-#### Alternative 5: [**{slider}**](https://slider.r-lib.org/)
-
-``` r
-library(slider)   ## requires to have installed {slider}
-
-drugs |>
-  mutate(everused = slide_vec(pick(-caseid), any))
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-The package [**{slider}**](https://slider.r-lib.org/) is a powerful
-package which provides several *sliding window* functions. It can be
-used to perform rowwise operations and is quite similar to **{lay}** in
-terms syntax. It is however not as efficient as **{lay}** and I am not
-sure it supports the automatic splicing demonstrated above.
-
-#### Alternative 6: [**{data.table}**](https://rdatatable.gitlab.io/data.table/)
-
-``` r
-library(data.table)  ## requires to have installed {data.table}
-
-drugs_dt <- data.table(drugs)
-
-drugs_dt[, ..I := .I]
-drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
-drugs_dt[, ..I := NULL]
-as_tibble(drugs_dt)
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-This is a solution for those using
-[**{data.table}**](https://rdatatable.gitlab.io/data.table/). It is not
-particularly efficient, nor particularly easy to remember for those who
-do not program frequently using
-[**{data.table}**](https://rdatatable.gitlab.io/data.table/).
-
-#### Alternative 7: `apply()`
-
-``` r
-drugs |>
-  mutate(everused = apply(pick(-caseid), 1L, any))
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-This is the base R solution. Very efficient and actually part of the
-default method used in `lay()`. Our implementation of `lay()` strips the
-need of defining the margin (the `1L` above) and benefits from the
-automatic splicing and the lambda syntax as shown above.
-
-#### Alternative 8: `for (i in ...) {...}`
-
-``` r
-drugs$everused <- NA
-
-columns_in <- !colnames(drugs) %in% c("caseid", "everused")
-
-for (i in seq_len(nrow(drugs))) {
-  drugs$everused[i] <- any(drugs[i, columns_in])
-}
-
-drugs
-#> # A tibble: 100 × 9
-#>    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused
-#>    <chr>    <int>   <int>   <int>   <int>   <int>   <int>   <int> <lgl>   
-#>  1 1            0       0       0       0       0       0       0 FALSE   
-#>  2 2            0       0       0       0       0       0       0 FALSE   
-#>  3 3            0       0       0       0       0       0       0 FALSE   
-#>  4 4            0       0       0       0       0       0       0 FALSE   
-#>  5 5            0       0       0       0       0       0       0 FALSE   
-#>  6 6            0       0       0       0       0       0       0 FALSE   
-#>  7 7            0       0       0       0       0       0       0 FALSE   
-#>  8 8            0       0       0       0       0       0       0 FALSE   
-#>  9 9            0       0       0       0       0       0       1 TRUE    
-#> 10 10           0       0       0       0       0       0       0 FALSE   
-#> # ℹ 90 more rows
-```
-
-This is another base R solution, which does not involve any external
-package. It is not very pretty, nor particularly efficient.
-
-#### Other alternatives?
-
-There are probably other ways. If you think of a nice one, please leave
-an issue and we will add it here!
-
-### Efficiency
-
-Here are the results of a benchmark comparing alternative
-implementations for our simple rowwise job on a larger dataset with 8
-columns and 55271 rows (see
-[benchmark](https://courtiol.github.io/lay/articles/benchmark.html) for
-details and more tests):
-
-<img src="man/figures/bench_run1-1.png" width="70%" style="display: block; margin: auto;" />
-
-Note that the x-axis of the plot is on a logarithmic scale.
-
-As you can see, `lay()` is not just simple and powerful, it is also
-quite efficient!
-
 ### History
 
 <img src="https://github.com/courtiol/lay/raw/main/.github/pics/lay_history.png" alt="lay_history" align="right" width="400">
 
 The first draft of this package has been created by **@romainfrancois**
-as a reply to a tweet I posted under **@rdataberlin** in February 2020.
-At the time I was exploring different ways to perform rowwise jobs in R
-and I was experimenting with various ideas on how to exploit the fact
-that the newly introduced function `across()` from
-[**{dplyr}**](https://dplyr.tidyverse.org/) creates tibbles on which on
-can easily apply a function. Romain came up with `lay()` as the better
-solution making good use of [**{rlang}**](https://rlang.r-lib.org/) &
+as a reply to a tweet I (Alexandre Courtiol) posted under
+**@rdataberlin** in February 2020. At the time I was exploring different
+ways to perform rowwise jobs in R and I was experimenting with various
+ideas on how to exploit the fact that the newly introduced function
+`across()` from [**{dplyr}**](https://dplyr.tidyverse.org/) creates
+tibbles on which one can easily apply a function. Romain came up with
+`lay()` as the better solution, making good use of
+[**{rlang}**](https://rlang.r-lib.org/) &
 [**{vctrs}**](https://vctrs.r-lib.org/).
 
 The verb `lay()` never made it to be integrated within
-[**{dplyr}**](https://dplyr.tidyverse.org/) and, so far, I still find
+[**{dplyr}**](https://dplyr.tidyverse.org/), but, so far, I still find
 `lay()` superior than most alternatives, which is why I decided to
-maintain this package.
-
-In short, I deserve little credit and instead you should feel free to
-buy Romain a coffee [here](https://ko-fi.com/romain) or to sponsor his
-[github profile](https://github.com/romainfrancois).
+document and maintain this package.

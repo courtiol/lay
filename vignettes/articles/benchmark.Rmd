@@ -1,10 +1,5 @@
 ---
 title: "Benchmarking alternative implementations for rowwise jobs"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Benchmarking alternative implementations for rowwise jobs}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -14,10 +9,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Vignette overview
+## Article overview
 
-The goal of this vignette is to compare the performances of `lay()` to alternatives.
-As you will see, the code using `lay()` is both simple and efficient.
+The goal of this article is to compare the performances of `lay()` to alternatives described [here](https://courtiol.github.io/lay/articles/alternatives.html).
+As you will see, the code using `lay()` is quite efficient.
 The only alternative that is clearly more efficient is the one labelled below "*vectorized*".
 Unfortunately, such a vectorized approach imply to refer explicitly to all column names which data are used.
 Furthermore, such a vectorized approach is not applicable generally, as it can only deal with logical
@@ -26,11 +21,11 @@ and arithmetic operators and does allow the use of other types of functions.
 
 ## Loading packages
 
-This vignette requires you to load the following packages:
+This article requires you to load the following packages:
 
 ```{r load_pkg, message=FALSE}
-library(dplyr)      ## for many things
 library(lay)        ## for lay() and the data
+library(dplyr)      ## for many things
 library(tidyr)      ## for pivot_longer() and pivot_wider()
 library(purrr)      ## for pmap_lgl()
 library(slider)     ## for slide()
@@ -60,7 +55,7 @@ drugs_full |>
   pivot_wider(names_from = used, values_from = n)
 ```
 
-In this vignette, we will compare the efficiency of alternative ways to create a new variable named `everused` which will indicate if each respondent as used any of the considered pain relievers for non medical purpose or not.
+In this article, we compare the efficiency of alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
 
 ## Benchmark
 
@@ -192,7 +187,7 @@ benchmark2 |>
   plot(type = "violin")
 ```
 
-Note that the x-axis of the plot is on a logarithmic scale.
+Note again that the x-axis of the plot is on a logarithmic scale.
 
 ## Benchmark environment
 

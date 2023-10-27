@@ -31,6 +31,5 @@ Suggests:
     slider,
     testthat (>= 2.1.0),
     tidyr
-VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

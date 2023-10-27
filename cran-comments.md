@@ -11,6 +11,9 @@
 
 ## R CMD check results
 
+2 false positives in terms of misspellings in DESCRIPTION:
+"Rowwise" and "tibble".
+
 0 errors | 0 warnings | 1 note
 
 * This is a new release.

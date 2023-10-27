@@ -1,0 +1,155 @@
+---
+title: "Alternatives to `lay()`"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Article overview
+
+There are many alternatives to perform rowwise jobs in R.
+In this article, we consider, in turns, these alternatives.
+We will stick to our example about drugs usage shown in [introduction](https://courtiol.github.io/lay/).
+The idea is to compare alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
+
+## Loading packages
+
+This article requires you to load the following packages:
+
+```{r load_pkg, message=FALSE}
+library(lay)        ## for lay() and the data
+library(dplyr)      ## for many things
+library(tidyr)      ## for pivot_longer() and pivot_wider()
+library(purrr)      ## for pmap_lgl()
+library(slider)     ## for slide()
+library(data.table) ## for an alternative to base and dplyr
+```
+Please install them if they are not present on your system.
+
+## Alternative 1: vectorized solution
+
+One solution is to simply do the following:
+```{r vector}
+drugs_full |>
+  mutate(everused = codeine | hydrocd | methdon | morphin | oxycodp | tramadl | vicolor)
+```
+It is certainly very efficient from a computational point of view, but coding this way presents two main limitations:
+
+  - you need to name all columns explicitly, which can be problematic when dealing with many columns
+  - you are stuck with expressing your task with logical and arithmetic operators, which is not always sufficient
+
+  
+## Alternative 2: 100% [**{dplyr}**](https://dplyr.tidyverse.org/)
+
+```{r dplyr}
+drugs |>
+  rowwise() |>
+  mutate(everused = any(c_across(-caseid))) |>
+  ungroup()
+```
+It is easy to use as `c_across()` turns its input into a vector and `rowwise()` implies that the
+vector only represents one row at a time. Yet, for now it remains quite slow on large datasets (see **Efficiency** below).
+
+
+## Alternative 3: [**{tidyr}**](https://tidyr.tidyverse.org/)
+
+```{r, }
+library(tidyr)  ## requires to have installed {tidyr}
+
+drugs |>
+  pivot_longer(-caseid) |>
+  group_by(caseid) |>
+  mutate(everused = any(value)) |>
+  ungroup() |>
+  pivot_wider() |>
+  relocate(everused, .after = last_col())
+```
+Here the trick is to turn the rowwise problem into a column problem by pivoting the values and then
+pivoting the results back. Many find that this involves a little too much intellectual gymnastic. It
+is also not particularly efficient on large dataset both in terms of computation time and memory required
+to pivot the tables.
+
+
+## Alternative 4: [**{purrr}**](https://purrr.tidyverse.org/)
+
+```{r purrr}
+library(purrr)  ## requires to have installed {purrr}
+
+drugs |>
+  mutate(everused = pmap_lgl(pick(-caseid), ~ any(...)))
+```
+This is a perfectly fine solution and actually part of what one implementation of `lay()` relies on
+(if `.method = "tidy"`), but from a user perspective it is a little too geeky-scary.
+
+
+## Alternative 5: [**{slider}**](https://slider.r-lib.org/)
+
+```{r slider}
+library(slider)   ## requires to have installed {slider}
+
+drugs |>
+  mutate(everused = slide_vec(pick(-caseid), any))
+```
+The package [**{slider}**](https://slider.r-lib.org/) is a powerful package which provides several *sliding window* functions.
+It can be used to perform rowwise operations and is quite similar to **{lay}** in terms syntax.
+It is however not as efficient as **{lay}** and I am not sure it supports the automatic splicing demonstrated above.
+
+
+## Alternative 6: [**{data.table}**](https://rdatatable.gitlab.io/data.table/)
+
+```{r data.table, message=FALSE}
+library(data.table)  ## requires to have installed {data.table}
+
+drugs_dt <- data.table(drugs)
+
+drugs_dt[, ..I := .I]
+drugs_dt[, everused := any(.SD), by = ..I, .SDcols = -"caseid"]
+drugs_dt[, ..I := NULL]
+as_tibble(drugs_dt)
+```
+This is a solution for those using [**{data.table}**](https://rdatatable.gitlab.io/data.table/).
+It is not particularly efficient, nor particularly easy to remember for those who do not program frequently using [**{data.table}**](https://rdatatable.gitlab.io/data.table/).
+
+
+## Alternative 7: `apply()`
+
+```{r apply}
+drugs |>
+  mutate(everused = apply(pick(-caseid), 1L, any))
+```
+This is the base R solution. Very efficient and actually part of the default method used in `lay()`.
+Our implementation of `lay()` strips the need of defining the margin (the `1L` above) and benefits from
+the automatic splicing and the lambda syntax as shown above.
+
+
+## Alternative 8: `for (i in ...) {...}`
+
+```{r for}
+drugs$everused <- NA
+
+columns_in <- !colnames(drugs) %in% c("caseid", "everused")
+
+for (i in seq_len(nrow(drugs))) {
+  drugs$everused[i] <- any(drugs[i, columns_in])
+}
+
+drugs
+```
+This is another base R solution, which does not involve any external package. It is not very pretty,
+nor particularly efficient.
+
+
+## Other alternatives?
+
+There are probably other ways. If you think of a nice one, please leave an issue and we will add it here!
+
+
+## Efficiency
+
+The results of a benchmark comparing alternative implementations for our simple rowwise job are shown in another article (see [benchmark](https://courtiol.github.io/lay/articles/benchmark.html)).
+As you will see, `lay()` is not just simple and powerful, it is also quite efficient!
+
