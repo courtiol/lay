@@ -3,8 +3,8 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   alternatives: alternatives.html
-  benchmark: benchmark.html
-last_built: 2023-10-27T11:01Z
+  benchmarks: benchmarks.html
+last_built: 2023-10-27T11:31Z
 urls:
   reference: https://courtiol.github.io/lay/reference
   article: https://courtiol.github.io/lay/articles

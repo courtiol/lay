@@ -48,8 +48,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/alternatives.html">Alternatives to `lay()`</a>
-    <a class="dropdown-item" href="articles/benchmark.html">Benchmarking alternative implementations for rowwise jobs</a>
+    <a class="dropdown-item" href="articles/alternatives.html">Alternatives for rowwise jobs</a>
+    <a class="dropdown-item" href="articles/benchmarks.html">Benchmarks</a>
   </div>
 </li>
       </ul>
@@ -86,7 +86,7 @@
 <p>The function <code><a href="reference/lay.html">lay()</a></code> – the only function of the package <strong>{lay}</strong> – is intended to be used to apply a function on each row of a data frame or tibble, independently, and across multiple columns containing values of the same class (e.g. all numeric).</p>
 <p>Implementing rowwise operations for tabular data is notoriously awkward in R. Many options have been proposed, but they tend to be complicated, inefficient, or both. Instead <code><a href="reference/lay.html">lay()</a></code> aims at reaching a sweet spot between simplicity and efficiency.</p>
 <p>The function has been specifically designed to be combined with functions from <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a> and to feel as if it was part of it (but you can use <code><a href="reference/lay.html">lay()</a></code> without <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a>).</p>
-<p>There is hardly any code behind <code><a href="reference/lay.html">lay()</a></code> (it can be coded in 3 lines), so this package may just be an interim solution before an established package fulfils the need… Time will tell.</p>
+<p>There is hardly any code behind <code><a href="reference/lay.html">lay()</a></code> (it can be coded in 3 lines), so this package may just be an interim solution before an established package fulfills the need… Time will tell.</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>

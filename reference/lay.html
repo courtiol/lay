@@ -26,8 +26,8 @@ at a time."><meta property="og:image" content="https://courtiol.github.io/lay/lo
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/alternatives.html">Alternatives to `lay()`</a>
-    <a class="dropdown-item" href="../articles/benchmark.html">Benchmarking alternative implementations for rowwise jobs</a>
+    <a class="dropdown-item" href="../articles/alternatives.html">Alternatives for rowwise jobs</a>
+    <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -87,7 +87,7 @@ Possible values are:</p><ul><li><p>A function, e.g. <code>mean</code></p></li>
 is used to apply the rowwise job:</p><ul><li><p>"apply", the default internally uses the function <code><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply()</a></code>.</p></li>
 <li><p>"tidy", internally uses <code><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">purrr::pmap()</a></code> and is stricter with respect to class coercion
 across columns.</p></li>
-</ul><p>The default has been chosen based on these <a href="../doc/benchmark.html"><strong>benchmarks</strong></a>.</p></dd>
+</ul><p>The default has been chosen based on these <a href="https://courtiol.github.io/lay/articles/benchmarks.html"><strong>benchmarks</strong></a>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -95,7 +95,7 @@ across columns.</p></li>
     <p><code>lay()</code> create a vector or a data frame (or tibble), by considering in turns each row of a data
 frame (<code>.data</code>) as the vector input of some function(s) <code>.fn</code>.</p>
 <p>This makes the creation of new columns based on a rowwise operation both simple (see
-<strong>Examples</strong>; below) and efficient (see the vignette <a href="../doc/benchmark.html"><strong>benchmarks</strong></a>).</p>
+<strong>Examples</strong>; below) and efficient (see the Article <a href="https://courtiol.github.io/lay/articles/benchmarks.html"><strong>benchmarks</strong></a>).</p>
 <p>The function should be fully compatible with <code>{dplyr}</code>-based workflows and follows a syntax close
 to <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across()</a></code>.</p>
 <p>Yet, it takes <code>.data</code> instead of <code>.cols</code> as a main argument, which makes it possible to also use
