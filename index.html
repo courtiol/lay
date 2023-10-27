@@ -48,6 +48,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/alternatives.html">Alternatives to `lay()`</a>
     <a class="dropdown-item" href="articles/benchmark.html">Benchmarking alternative implementations for rowwise jobs</a>
   </div>
 </li>
@@ -89,10 +90,9 @@
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>You can install a development version of <strong>{lay}</strong> with:</p>
+<p>You can install the development version of <strong>{lay}</strong> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"courtiol/lay"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"courtiol/lay"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
@@ -208,9 +208,9 @@
 <span><span class="co">#&gt; # ℹ 13 more variables: `2005` &lt;dbl&gt;, `2006` &lt;dbl&gt;, `2007` &lt;dbl&gt;, `2008` &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   `2009` &lt;dbl&gt;, `2010` &lt;dbl&gt;, `2011` &lt;dbl&gt;, `2012` &lt;dbl&gt;, `2013` &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   `2014` &lt;dbl&gt;, `2015` &lt;dbl&gt;, `2016` &lt;dbl&gt;, `2017` &lt;dbl&gt;</span></span></code></pre></div>
-<p>Since the other backbone of <code><a href="reference/lay.html">lay()</a></code> is <a href="https://vctrs.r-lib.org" class="external-link"><strong>{vctrs}</strong></a>, the splicing happens automatically (unless the output of the call is used to create a named column). This is why, in the last chunk of code, three different columns (<em>min</em>, <em>mean</em> and <em>max</em>) where directly created.</p>
+<p>Since the other backbone of <code><a href="reference/lay.html">lay()</a></code> is <a href="https://vctrs.r-lib.org" class="external-link"><strong>{vctrs}</strong></a>, the splicing happens automatically (unless the output of the call is used to create a named column). This is why, in the last chunk of code, three different columns (<em>min</em>, <em>mean</em> and <em>max</em>) are directly created.</p>
 <p><strong>Important:</strong> when using <code><a href="reference/lay.html">lay()</a></code> the function you want to use for the rowwise job must output a scalar (vector of length 1), or a tibble or data frame with a single row.</p>
-<p>We can apply a function that returns a vector of length &gt; 1 by turning such vector into a tibble using <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble_row()</a></code> from <a href="https://tibble.tidyverse.org/" class="external-link"><strong>{tibble}</strong></a>:</p>
+<p>We can apply a function that returns a vector of length &gt; 1 by turning such a vector into a tibble using <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble_row()</a></code> from <a href="https://tibble.tidyverse.org/" class="external-link"><strong>{tibble}</strong></a>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world_bank_pop</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"SP.POP.TOTL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -236,246 +236,11 @@
 <span><span class="co">#&gt; #   `2017` &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="alternatives-to-lay">Alternatives to <code>lay()</code>
-<a class="anchor" aria-label="anchor" href="#alternatives-to-lay"></a>
-</h3>
-<p>Of course, there are many alternatives to perform rowwise jobs.</p>
-<p>Let’s now consider, in turns, these alternatives – sticking to our example about drugs usage.</p>
-<div class="section level4">
-<h4 id="alternative-1-vectorized-solution">Alternative 1: vectorized solution<a class="anchor" aria-label="anchor" href="#alternative-1-vectorized-solution"></a>
-</h4>
-<p>One solution is to simply do the following:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">drugs_full</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="va">codeine</span> <span class="op">|</span> <span class="va">hydrocd</span> <span class="op">|</span> <span class="va">methdon</span> <span class="op">|</span> <span class="va">morphin</span> <span class="op">|</span> <span class="va">oxycodp</span> <span class="op">|</span> <span class="va">tramadl</span> <span class="op">|</span> <span class="va">vicolor</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 55,271 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 55,261 more rows</span></span></code></pre></div>
-<p>It is certainly very efficient from a computational point of view, but coding this way presents two main limitations:</p>
-<ul>
-<li>you need to name all columns explicitly, which can be problematic when dealing with many columns</li>
-<li>you are stuck with expressing your task with logical and arithmetic operators, which is not always sufficient</li>
-</ul>
-</div>
-<div class="section level4">
-<h4 id="alternative-2-100-dplyr">Alternative 2: 100% <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a>
-<a class="anchor" aria-label="anchor" href="#alternative-2-100-dplyr"></a>
-</h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">drugs</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/c_across.html" class="external-link">c_across</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>It is easy to use as <code><a href="https://dplyr.tidyverse.org/reference/c_across.html" class="external-link">c_across()</a></code> turns its input into a vector and <code><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise()</a></code> implies that the vector only represents one row at a time. Yet, for now it remains quite slow on large datasets (see <strong>Efficiency</strong> below).</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-3-tidyr">Alternative 3: <a href="https://tidyr.tidyverse.org/" class="external-link"><strong>{tidyr}</strong></a>
-<a class="anchor" aria-label="anchor" href="#alternative-3-tidyr"></a>
-</h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>  <span class="co">## requires to have installed {tidyr}</span></span>
-<span></span>
-<span><span class="va">drugs</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">caseid</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span><span class="va">everused</span>, .after <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">last_col</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>Here the trick is to turn the rowwise problem into a column problem by pivoting the values and then pivoting the results back. Many find that this involves a little too much intellectual gymnastic. It is also not particularly efficient on large dataset both in terms of computation time and memory required to pivot the tables.</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-4-purrr">Alternative 4: <a href="https://purrr.tidyverse.org/" class="external-link"><strong>{purrr}</strong></a>
-<a class="anchor" aria-label="anchor" href="#alternative-4-purrr"></a>
-</h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span>  <span class="co">## requires to have installed {purrr}</span></span>
-<span></span>
-<span><span class="va">drugs</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap_lgl</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>This is a perfectly fine solution and actually part of what one implementation of <code><a href="reference/lay.html">lay()</a></code> relies on (if <code>.method = "tidy"</code>), but from a user perspective it is a little too geeky-scary.</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-5-slider">Alternative 5: <a href="https://slider.r-lib.org/" class="external-link"><strong>{slider}</strong></a>
-<a class="anchor" aria-label="anchor" href="#alternative-5-slider"></a>
-</h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/slider" class="external-link">slider</a></span><span class="op">)</span>   <span class="co">## requires to have installed {slider}</span></span>
-<span></span>
-<span><span class="va">drugs</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="https://slider.r-lib.org/reference/slide.html" class="external-link">slide_vec</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span>, <span class="va">any</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>The package <a href="https://slider.r-lib.org/" class="external-link"><strong>{slider}</strong></a> is a powerful package which provides several <em>sliding window</em> functions. It can be used to perform rowwise operations and is quite similar to <strong>{lay}</strong> in terms syntax. It is however not as efficient as <strong>{lay}</strong> and I am not sure it supports the automatic splicing demonstrated above.</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-6-datatable">Alternative 6: <a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><strong>{data.table}</strong></a>
-<a class="anchor" aria-label="anchor" href="#alternative-6-datatable"></a>
-</h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>  <span class="co">## requires to have installed {data.table}</span></span>
-<span></span>
-<span><span class="va">drugs_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">drugs</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">drugs_dt</span><span class="op">[</span>, <span class="va">..I</span> <span class="op">:=</span> <span class="va">.I</span><span class="op">]</span></span>
-<span><span class="va">drugs_dt</span><span class="op">[</span>, <span class="va">everused</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">..I</span>, .SDcols <span class="op">=</span> <span class="op">-</span><span class="st">"caseid"</span><span class="op">]</span></span>
-<span><span class="va">drugs_dt</span><span class="op">[</span>, <span class="va">..I</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="va">drugs_dt</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>This is a solution for those using <a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><strong>{data.table}</strong></a>. It is not particularly efficient, nor particularly easy to remember for those who do not program frequently using <a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><strong>{data.table}</strong></a>.</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-7-apply">Alternative 7: <code>apply()</code>
-<a class="anchor" aria-label="anchor" href="#alternative-7-apply"></a>
-</h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">drugs</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span>, <span class="fl">1L</span>, <span class="va">any</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>This is the base R solution. Very efficient and actually part of the default method used in <code><a href="reference/lay.html">lay()</a></code>. Our implementation of <code><a href="reference/lay.html">lay()</a></code> strips the need of defining the margin (the <code>1L</code> above) and benefits from the automatic splicing and the lambda syntax as shown above.</p>
-</div>
-<div class="section level4">
-<h4 id="alternative-8-for-i-in--">Alternative 8: <code>for (i in ...) {...}</code>
-<a class="anchor" aria-label="anchor" href="#alternative-8-for-i-in--"></a>
-</h4>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">drugs</span><span class="op">$</span><span class="va">everused</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span></span>
-<span><span class="va">columns_in</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">drugs</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"caseid"</span>, <span class="st">"everused"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">drugs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">drugs</span><span class="op">$</span><span class="va">everused</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">drugs</span><span class="op">[</span><span class="va">i</span>, <span class="va">columns_in</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">drugs</span></span>
-<span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
-<span><span class="co">#&gt;    caseid hydrocd oxycodp codeine tramadl morphin methdon vicolor everused</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt;  1 1            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  2 2            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  3 3            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  4 4            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  5 5            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  6 6            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  7 7            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  8 8            0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt;  9 9            0       0       0       0       0       0       1 TRUE    </span></span>
-<span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
-<span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
-<p>This is another base R solution, which does not involve any external package. It is not very pretty, nor particularly efficient.</p>
-</div>
-<div class="section level4">
-<h4 id="other-alternatives">Other alternatives?<a class="anchor" aria-label="anchor" href="#other-alternatives"></a>
-</h4>
-<p>There are probably other ways. If you think of a nice one, please leave an issue and we will add it here!</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="efficiency">Efficiency<a class="anchor" aria-label="anchor" href="#efficiency"></a>
-</h3>
-<p>Here are the results of a benchmark comparing alternative implementations for our simple rowwise job on a larger dataset with 8 columns and 55271 rows (see <a href="https://courtiol.github.io/lay/articles/benchmark.html">benchmark</a> for details and more tests):</p>
-<p><img src="reference/figures/bench_run1-1.png" width="70%" style="display: block; margin: auto;"></p>
-<p>Note that the x-axis of the plot is on a logarithmic scale.</p>
-<p>As you can see, <code><a href="reference/lay.html">lay()</a></code> is not just simple and powerful, it is also quite efficient!</p>
-</div>
-<div class="section level3">
 <h3 id="history">History<a class="anchor" aria-label="anchor" href="#history"></a>
 </h3>
 <p><img src="https://github.com/courtiol/lay/raw/main/.github/pics/lay_history.png" alt="lay_history" align="right" width="400"></p>
-<p>The first draft of this package has been created by <strong>@romainfrancois</strong> as a reply to a tweet I posted under <strong>@rdataberlin</strong> in February 2020. At the time I was exploring different ways to perform rowwise jobs in R and I was experimenting with various ideas on how to exploit the fact that the newly introduced function <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across()</a></code> from <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a> creates tibbles on which on can easily apply a function. Romain came up with <code><a href="reference/lay.html">lay()</a></code> as the better solution making good use of <a href="https://rlang.r-lib.org/" class="external-link"><strong>{rlang}</strong></a> &amp; <a href="https://vctrs.r-lib.org/" class="external-link"><strong>{vctrs}</strong></a>.</p>
-<p>The verb <code><a href="reference/lay.html">lay()</a></code> never made it to be integrated within <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a> and, so far, I still find <code><a href="reference/lay.html">lay()</a></code> superior than most alternatives, which is why I decided to maintain this package.</p>
-<p>In short, I deserve little credit and instead you should feel free to buy Romain a coffee <a href="https://ko-fi.com/romain" class="external-link">here</a> or to sponsor his <a href="https://github.com/romainfrancois" class="external-link">github profile</a>.</p>
+<p>The first draft of this package has been created by <strong>@romainfrancois</strong> as a reply to a tweet I (Alexandre Courtiol) posted under <strong>@rdataberlin</strong> in February 2020. At the time I was exploring different ways to perform rowwise jobs in R and I was experimenting with various ideas on how to exploit the fact that the newly introduced function <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across()</a></code> from <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a> creates tibbles on which one can easily apply a function. Romain came up with <code><a href="reference/lay.html">lay()</a></code> as the better solution, making good use of <a href="https://rlang.r-lib.org/" class="external-link"><strong>{rlang}</strong></a> &amp; <a href="https://vctrs.r-lib.org/" class="external-link"><strong>{vctrs}</strong></a>.</p>
+<p>The verb <code><a href="reference/lay.html">lay()</a></code> never made it to be integrated within <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a>, but, so far, I still find <code><a href="reference/lay.html">lay()</a></code> superior than most alternatives, which is why I decided to document and maintain this package.</p>
 </div>
 </div>
 </div>

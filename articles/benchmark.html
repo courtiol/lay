@@ -48,6 +48,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/alternatives.html">Alternatives to `lay()`</a>
     <a class="dropdown-item" href="../articles/benchmark.html">Benchmarking alternative implementations for rowwise jobs</a>
   </div>
 </li>
@@ -78,21 +79,21 @@
       <img src="../logo.png" class="logo" alt=""><h1>Benchmarking alternative implementations for rowwise jobs</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/courtiol/lay/blob/HEAD/vignettes/benchmark.Rmd" class="external-link"><code>vignettes/benchmark.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/courtiol/lay/blob/HEAD/vignettes/articles/benchmark.Rmd" class="external-link"><code>vignettes/articles/benchmark.Rmd</code></a></small>
       <div class="d-none name"><code>benchmark.Rmd</code></div>
     </div>
 
     
     
 <div class="section level2">
-<h2 id="vignette-overview">Vignette overview<a class="anchor" aria-label="anchor" href="#vignette-overview"></a>
+<h2 id="article-overview">Article overview<a class="anchor" aria-label="anchor" href="#article-overview"></a>
 </h2>
-<p>The goal of this vignette is to compare the performances of
-<code><a href="../reference/lay.html">lay()</a></code> to alternatives. As you will see, the code using
-<code><a href="../reference/lay.html">lay()</a></code> is both simple and efficient. The only alternative
-that is clearly more efficient is the one labelled below
-“<em>vectorized</em>”. Unfortunately, such a vectorized approach imply
-to refer explicitly to all column names which data are used.
+<p>The goal of this article is to compare the performances of
+<code><a href="../reference/lay.html">lay()</a></code> to alternatives described <a href="https://courtiol.github.io/lay/articles/alternatives.html">here</a>.
+As you will see, the code using <code><a href="../reference/lay.html">lay()</a></code> is quite efficient.
+The only alternative that is clearly more efficient is the one labelled
+below “<em>vectorized</em>”. Unfortunately, such a vectorized approach
+imply to refer explicitly to all column names which data are used.
 Furthermore, such a vectorized approach is not applicable generally, as
 it can only deal with logical and arithmetic operators and does allow
 the use of other types of functions.</p>
@@ -100,10 +101,10 @@ the use of other types of functions.</p>
 <div class="section level2">
 <h2 id="loading-packages">Loading packages<a class="anchor" aria-label="anchor" href="#loading-packages"></a>
 </h2>
-<p>This vignette requires you to load the following packages:</p>
+<p>This article requires you to load the following packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>      <span class="co">## for many things</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://courtiol.github.io/lay/">lay</a></span><span class="op">)</span>        <span class="co">## for lay() and the data</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://courtiol.github.io/lay/">lay</a></span><span class="op">)</span>        <span class="co">## for lay() and the data</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>      <span class="co">## for many things</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>      <span class="co">## for pivot_longer() and pivot_wider()</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span>      <span class="co">## for pmap_lgl()</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/slider" class="external-link">slider</a></span><span class="op">)</span>     <span class="co">## for slide()</span></span>
@@ -152,9 +153,9 @@ of pain relievers for non medical purpose.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> oxycodp         <span style="text-decoration: underline;">51</span>461      <span style="text-decoration: underline;">3</span>810</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> tramadl         <span style="text-decoration: underline;">54</span>480       791</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> vicolor         <span style="text-decoration: underline;">50</span>358      <span style="text-decoration: underline;">4</span>913</span></span></code></pre></div>
-<p>In this vignette, we will compare the efficiency of alternative ways
-to create a new variable named <code>everused</code> which will indicate
-if each respondent as used any of the considered pain relievers for non
+<p>In this article, we compare the efficiency of alternative ways to
+create a new variable named <code>everused</code> which indicates if
+each respondent has used any of the considered pain relievers for non
 medical purpose or not.</p>
 </div>
 <div class="section level2">
@@ -215,18 +216,18 @@ job:</p>
 <code class="sourceCode R"><span><span class="va">benchmark1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">median</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
-<span><span class="co">#&gt;    expression            min    median `itr/sec` mem_alloc `gc/sec`</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized           3.01      3.12 310.         2.74MB    0    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply              121.      122.     8.13       4.01MB    1.63 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lay                145.      161.     6.29       5.49MB    2.51 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pivot_pivot        309.      313.     3.14      62.38MB    0.629</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> pmap               368.      372.     2.53     251.29KB    2.53 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> lay_alternative   <span style="text-decoration: underline;">2</span>138.     <span style="text-decoration: underline;">2</span>174.     0.460      15.3MB    1.75 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> data.table        <span style="text-decoration: underline;">5</span>367.     <span style="text-decoration: underline;">5</span>475.     0.183      3.04MB    1.25 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> slider            <span style="text-decoration: underline;">6</span>530.     <span style="text-decoration: underline;">6</span>767.     0.148    915.15KB    1.24 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              <span style="text-decoration: underline;">13</span>169.    <span style="text-decoration: underline;">13</span>195.     0.074<span style="text-decoration: underline;">5</span>   271.48KB    1.34 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        <span style="text-decoration: underline;">103</span>925.   <span style="text-decoration: underline;">110</span>629.     0.009<span style="text-decoration: underline;">06</span>  424.32MB    0.812</span></span></code></pre></div>
+<span><span class="co">#&gt;    expression           min   median `itr/sec` mem_alloc `gc/sec`</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized          2.42     2.47  387.        2.74MB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply              98.6    101.      9.91      4.01MB     3.97</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lay               119.     125.      7.96      5.49MB     3.18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> pivot_pivot       248.     254.      3.95     62.38MB     1.58</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> pmap              290.     292.      3.42    251.29KB     3.42</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> lay_alternative  <span style="text-decoration: underline;">1</span>286.    <span style="text-decoration: underline;">1</span>287.      0.772     15.3MB     2.16</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> data.table       <span style="text-decoration: underline;">3</span>342.    <span style="text-decoration: underline;">3</span>360.      0.290     3.04MB     2.38</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> slider           <span style="text-decoration: underline;">4</span>004.    <span style="text-decoration: underline;">4</span>041.      0.247   915.15KB     2.52</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              <span style="text-decoration: underline;">7</span>386.    <span style="text-decoration: underline;">7</span>394.      0.135   271.48KB     2.94</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        <span style="text-decoration: underline;">70</span>741.   <span style="text-decoration: underline;">71</span>373.      0.014<span style="text-decoration: underline;">0</span>  424.32MB     1.34</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span>, <span class="va">median</span>, .desc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -291,22 +292,22 @@ job:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">#&gt;    expression         min median `itr/sec` mem_alloc `gc/sec`</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;bch:expr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;bch:byt&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized        1.27   1.46    685.      7.33KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply             3.42   3.88    245.     16.92KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> pmap              3.73   4.24    236.      9.91KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> lay               5.46   6.01    165.     27.12KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> lay_alternative   6.47   6.95    143.     38.05KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> data.table        9.81  10.7      93.7    67.66KB     3.23</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> slider           13.8   15.5      63.8    11.18KB     2.20</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> pivot_pivot      21.5   23.5      42.2   189.23KB     0   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> for              26.6   29.3      34.0    17.74KB     1.17</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        171.   181.        5.46  794.53KB     1.66</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> vectorized        1.01   1.05    946.      7.33KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> apply             2.89   2.94    335.     16.92KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> pmap              3.23   3.32    298.      9.91KB    10.3 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> lay               4.86   4.92    202.     27.12KB     6.98</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> lay_alternative   5.03   5.16    194.     38.05KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> data.table        6.46   6.81    147.     67.66KB     5.06</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> slider            9.66  10.1      99.6    11.18KB     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> for              15.5   16.3      60.8    17.74KB     4.34</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> pivot_pivot      16.9   17.3      57.6   189.23KB     1.99</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> c_across        133.   134.        7.48  794.77KB     2.28</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">benchmark2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html" class="external-link">fct_reorder</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">expression</span><span class="op">)</span>, <span class="va">median</span>, .desc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"violin"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="benchmark_files/figure-html/bench_plot2-1.png" width="672"></p>
-<p>Note that the x-axis of the plot is on a logarithmic scale.</p>
+<p>Note again that the x-axis of the plot is on a logarithmic scale.</p>
 </div>
 <div class="section level2">
 <h2 id="benchmark-environment">Benchmark environment<a class="anchor" aria-label="anchor" href="#benchmark-environment"></a>
@@ -335,7 +336,7 @@ job:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt; [1] forcats_1.0.0     bench_1.1.3       data.table_1.14.8 slider_0.3.1     </span></span>
-<span><span class="co">#&gt; [5] purrr_1.0.2       tidyr_1.3.0       lay_0.1.1         dplyr_1.1.3      </span></span>
+<span><span class="co">#&gt; [5] purrr_1.0.2       tidyr_1.3.0       dplyr_1.1.3       lay_0.1.1        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] sass_0.4.7        utf8_1.2.4        generics_0.1.3    stringi_1.7.12   </span></span>
