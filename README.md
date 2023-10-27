@@ -15,20 +15,15 @@ status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/pa
 
 ## An R package for simple but efficient rowwise jobs
 
-### Why **{lay}**?
+The function `lay()` – the only function of the package **{lay}** – is
+intended to be used to apply a function on each row of a data frame or
+tibble, independently, and across multiple columns containing values of
+the same class (e.g. all numeric).
 
 Implementing rowwise operations for tabular data is notoriously awkward
-in R.
-
-Many options have been proposed, but they tend to be complicated,
-inefficient, or both.
-
-Instead `lay()` – the only function of the package **{lay}** – aims at
-reaching a sweet spot between simplicity and efficiency.
-
-The function `lay()` is intended to be used to apply a function on each
-row of a data frame or tibble, independently, and across multiple
-columns containing values of the same class (e.g. all numeric).
+in R. Many options have been proposed, but they tend to be complicated,
+inefficient, or both. Instead `lay()` aims at reaching a sweet spot
+between simplicity and efficiency.
 
 The function has been specifically designed to be combined with
 functions from [**{dplyr}**](https://dplyr.tidyverse.org/) and to feel
