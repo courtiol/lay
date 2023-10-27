@@ -10,13 +10,13 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = ".github/pics/README-",
+  fig.path = "man/figures",
   out.width = "70%",
   fig.align = "center"
 )
 ```
 
-# <img src="inst/figures/logo.png" align="right" height="138" /> **{lay}**
+# <img src="man/figures/logo.png" align="right" height="138" /> **{lay}**
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
