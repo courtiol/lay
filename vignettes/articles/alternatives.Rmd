@@ -1,5 +1,5 @@
 ---
-title: "Alternatives to `lay()`"
+title: "Alternatives for rowwise jobs"
 ---
 
 ```{r, include = FALSE}
@@ -12,13 +12,13 @@ knitr::opts_chunk$set(
 ## Article overview
 
 There are many alternatives to perform rowwise jobs in R.
-In this article, we consider, in turns, these alternatives.
+In this Article, we consider, in turns, these alternatives.
 We will stick to our example about drugs usage shown in [introduction](https://courtiol.github.io/lay/).
 The idea is to compare alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
 
 ## Loading packages
 
-This article requires you to load the following packages:
+This Article requires you to load the following packages:
 
 ```{r load_pkg, message=FALSE}
 library(lay)        ## for lay() and the data
@@ -150,6 +150,6 @@ There are probably other ways. If you think of a nice one, please leave an issue
 
 ## Efficiency
 
-The results of a benchmark comparing alternative implementations for our simple rowwise job are shown in another article (see [benchmark](https://courtiol.github.io/lay/articles/benchmark.html)).
+The results of benchmarks comparing alternative implementations for our simple rowwise job are shown in another Article (see [benchmarks](https://courtiol.github.io/lay/articles/benchmarks.html)).
 As you will see, `lay()` is not just simple and powerful, it is also quite efficient!
 

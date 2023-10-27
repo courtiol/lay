@@ -1,5 +1,5 @@
 ---
-title: "Benchmarking alternative implementations for rowwise jobs"
+title: "Benchmarks"
 ---
 
 ```{r, include = FALSE}
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 
 ## Article overview
 
-The goal of this article is to compare the performances of `lay()` to alternatives described [here](https://courtiol.github.io/lay/articles/alternatives.html).
+The goal of this Article is to compare the performances of `lay()` to alternatives described [here](https://courtiol.github.io/lay/articles/alternatives.html).
 As you will see, the code using `lay()` is quite efficient.
 The only alternative that is clearly more efficient is the one labeled below "*vectorized*".
 Unfortunately, such a vectorized approach imply to refer explicitly to all column names which data are used.
@@ -21,7 +21,7 @@ and arithmetic operators and does allow the use of other types of functions.
 
 ## Loading packages
 
-This article requires you to load the following packages:
+This Article requires you to load the following packages:
 
 ```{r load_pkg, message=FALSE}
 library(lay)        ## for lay() and the data
@@ -30,8 +30,8 @@ library(tidyr)      ## for pivot_longer() and pivot_wider()
 library(purrr)      ## for pmap_lgl()
 library(slider)     ## for slide()
 library(data.table) ## for an alternative to base and dplyr
-library(bench)      ## for running the benchmark
-library(forcats)    ## for sorting levels in benchmark plot with fct_reorder()
+library(bench)      ## for running the benchmarks
+library(forcats)    ## for sorting levels in plot with fct_reorder()
 ```
 
 Please install them if they are not present on your system.
@@ -55,9 +55,9 @@ drugs_full |>
   pivot_wider(names_from = used, values_from = n)
 ```
 
-In this article, we compare the efficiency of alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
+In this Article, we compare the efficiency of alternative ways to create a new variable named `everused` which indicates if each respondent has used any of the considered pain relievers for non medical purpose or not.
 
-## Benchmark
+## Benchmarks
 
 Let's compare the running time of different methods to do this job:
 
@@ -189,7 +189,7 @@ benchmark2 |>
 
 Note again that the x-axis of the plot is on a logarithmic scale.
 
-## Benchmark environment
+## Benchmarks' environment
 
 ```{r session}
 sessionInfo()

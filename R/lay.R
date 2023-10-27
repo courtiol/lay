@@ -7,7 +7,7 @@
 #' frame (`.data`) as the vector input of some function(s) `.fn`.
 #'
 #' This makes the creation of new columns based on a rowwise operation both simple (see
-#' **Examples**; below) and efficient (see the vignette [**benchmarks**](../doc/benchmark.html)).
+#' **Examples**; below) and efficient (see the Article [**benchmarks**](https://courtiol.github.io/lay/articles/benchmarks.html)).
 #'
 #' The function should be fully compatible with `{dplyr}`-based workflows and follows a syntax close
 #' to [dplyr::across()].
@@ -49,7 +49,7 @@
 #'   - "tidy", internally uses [purrr::pmap()] and is stricter with respect to class coercion
 #'   across columns.
 #'
-#'   The default has been chosen based on these [**benchmarks**](../doc/benchmark.html).
+#'   The default has been chosen based on these [**benchmarks**](https://courtiol.github.io/lay/articles/benchmarks.html).
 #'
 #' @importFrom vctrs vec_c
 #' @importFrom rlang list2 exec as_function

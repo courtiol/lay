@@ -31,7 +31,7 @@ is used to apply the rowwise job:
 across columns.
 }
 
-The default has been chosen based on these \href{../doc/benchmark.html}{\strong{benchmarks}}.}
+The default has been chosen based on these \href{https://courtiol.github.io/lay/articles/benchmarks.html}{\strong{benchmarks}}.}
 }
 \description{
 Create efficiently new column(s) in data frame (including tibble) by applying a function one row
@@ -42,7 +42,7 @@ at a time.
 frame (\code{.data}) as the vector input of some function(s) \code{.fn}.
 
 This makes the creation of new columns based on a rowwise operation both simple (see
-\strong{Examples}; below) and efficient (see the vignette \href{../doc/benchmark.html}{\strong{benchmarks}}).
+\strong{Examples}; below) and efficient (see the Article \href{https://courtiol.github.io/lay/articles/benchmarks.html}{\strong{benchmarks}}).
 
 The function should be fully compatible with \code{{dplyr}}-based workflows and follows a syntax close
 to \code{\link[dplyr:across]{dplyr::across()}}.
