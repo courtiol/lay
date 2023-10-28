@@ -33,6 +33,9 @@ across columns.
 
 The default has been chosen based on these \href{https://courtiol.github.io/lay/articles/benchmarks.html}{\strong{benchmarks}}.}
 }
+\value{
+A vector with one element per row of \code{.data}, or a data frame (or tibble) with one row per row of \code{.data}. The class of the output is determined by \code{.fn}.
+}
 \description{
 Create efficiently new column(s) in data frame (including tibble) by applying a function one row
 at a time.

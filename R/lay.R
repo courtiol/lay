@@ -51,6 +51,8 @@
 #'
 #'   The default has been chosen based on these [**benchmarks**](https://courtiol.github.io/lay/articles/benchmarks.html).
 #'
+#' @return A vector with one element per row of `.data`, or a data frame (or tibble) with one row per row of `.data`. The class of the output is determined by `.fn`.
+#'
 #' @importFrom vctrs vec_c
 #' @importFrom rlang list2 exec as_function
 #' @importFrom purrr pmap
