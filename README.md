@@ -43,7 +43,7 @@ install.packages("lay")
 ```
 
 Alternatively, you can install the development version of **{lay}**
-with:
+using [**{remotes}**](https://remotes.r-lib.org/):
 
 ``` r
 remotes::install_github("courtiol/lay")

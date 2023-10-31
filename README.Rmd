@@ -47,7 +47,7 @@ You can install the current CRAN version of **{lay}** with:
 install.packages("lay")
 ```
 
-Alternatively, you can install the development version of **{lay}** with:
+Alternatively, you can install the development version of **{lay}** using [**{remotes}**](https://remotes.r-lib.org/):
 
 ``` r
 remotes::install_github("courtiol/lay")
