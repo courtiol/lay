@@ -93,15 +93,18 @@
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>You can install the development version of <strong>{lay}</strong> with:</p>
+<p>You can install the current CRAN version of <strong>{lay}</strong> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"courtiol/lay"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"lay"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, you can install the development version of <strong>{lay}</strong> using <a href="https://remotes.r-lib.org/" class="external-link"><strong>{remotes}</strong></a>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"courtiol/lay"</span><span class="op">)</span> <span class="co">## requires to have installed {remotes}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
 </h3>
 <p>Consider the following dataset, which contains information about the use of pain relievers for non medical purpose.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://courtiol.github.io/lay/">lay</a></span><span class="op">)</span>  <span class="co">## requires to have installed {lay}</span></span>
 <span><span class="va">drugs</span></span>
 <span><span class="co">#&gt; # A tibble: 100 × 8</span></span>
@@ -127,7 +130,7 @@
 <a class="anchor" aria-label="anchor" href="#our-solution-lay"></a>
 </h3>
 <p>This is how you would achieve our goal using <code><a href="reference/lay.html">lay()</a></code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="co">## requires to have installed {dplyr}</span></span>
 <span></span>
 <span><span class="va">drugs_full</span> <span class="op">|&gt;</span></span>
@@ -149,7 +152,7 @@
 <p>We used <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate()</a></code> from <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a> to create a new column called <em>everused</em>, and we used <code><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick()</a></code> from that same package to remove the column <em>caseid</em> when laying down each row of the data and applying the function <code><a href="https://rdrr.io/r/base/any.html" class="external-link">any()</a></code>.</p>
 <p>When combining <code><a href="reference/lay.html">lay()</a></code> and <a href="https://dplyr.tidyverse.org/" class="external-link"><strong>{dplyr}</strong></a>, you should always use <code><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across()</a></code>. The functions <code><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across()</a></code> let you pick among many <a href="https://tidyselect.r-lib.org/reference/language.html" class="external-link">selection helpers</a> from the package <a href="https://tidyselect.r-lib.org/" class="external-link"><strong>{tidyselect}</strong></a>, which makes it easy to specify which columns to consider.</p>
 <p>Our function <code><a href="reference/lay.html">lay()</a></code> is quite flexible! For example, you can pass argument(s) of the function you wish to apply rowwise (here <code><a href="https://rdrr.io/r/base/any.html" class="external-link">any()</a></code>):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugs_with_NA</span> <span class="op">&lt;-</span> <span class="va">drugs</span>     <span class="co">## create a copy of the dataset</span></span>
 <span><span class="va">drugs_with_NA</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>  <span class="co">## introduce a missing value</span></span>
 <span></span>
@@ -169,7 +172,7 @@
 <span><span class="co">#&gt;   &lt;chr&gt;    &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;   </span></span>
 <span><span class="co">#&gt; 1 1           NA       0       0       0       0       0       0 FALSE</span></span></code></pre></div>
 <p>Since one of the backbones of <code><a href="reference/lay.html">lay()</a></code> is <a href="https://rlang.r-lib.org" class="external-link"><strong>{rlang}</strong></a>, you can use the so-called <a href="https://rlang.r-lib.org/reference/as_function.html" class="external-link"><em>lambda</em> syntax</a> to define anonymous functions on the fly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugs_with_NA</span> <span class="op">|&gt;</span></span>
 <span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>everused <span class="op">=</span> <span class="fu"><a href="reference/lay.html">lay</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick</a></span><span class="op">(</span><span class="op">-</span><span class="va">caseid</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co">## same as above, different syntax</span></span>
 <span><span class="co">#&gt; # A tibble: 100 × 9</span></span>
@@ -187,7 +190,7 @@
 <span><span class="co">#&gt; 10 10           0       0       0       0       0       0       0 FALSE   </span></span>
 <span><span class="co">#&gt; # ℹ 90 more rows</span></span></code></pre></div>
 <p>We can also apply many functions at once, as exemplified with another dataset:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"world_bank_pop"</span>, package <span class="op">=</span> <span class="st">"tidyr"</span><span class="op">)</span>  <span class="co">## requires to have installed {tidyr}</span></span>
 <span></span>
 <span><span class="va">world_bank_pop</span> <span class="op">|&gt;</span></span>
@@ -214,7 +217,7 @@
 <p>Since the other backbone of <code><a href="reference/lay.html">lay()</a></code> is <a href="https://vctrs.r-lib.org" class="external-link"><strong>{vctrs}</strong></a>, the splicing happens automatically (unless the output of the call is used to create a named column). This is why, in the last chunk of code, three different columns (<em>min</em>, <em>mean</em> and <em>max</em>) are directly created.</p>
 <p><strong>Important:</strong> when using <code><a href="reference/lay.html">lay()</a></code> the function you want to use for the rowwise job must output a scalar (vector of length 1), or a tibble or data frame with a single row.</p>
 <p>We can apply a function that returns a vector of length &gt; 1 by turning such a vector into a tibble using <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble_row()</a></code> from <a href="https://tibble.tidyverse.org/" class="external-link"><strong>{tibble}</strong></a>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world_bank_pop</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indicator</span> <span class="op">==</span> <span class="st">"SP.POP.TOTL"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="reference/lay.html">lay</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pick.html" class="external-link">pick</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">matches</a></span><span class="op">(</span><span class="st">"\\d"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -250,6 +253,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=lay" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/courtiol/lay/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/courtiol/lay/issues/" class="external-link">Report a bug</a></li>
 </ul>
@@ -290,10 +294,10 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://CRAN.R-project.org/package=lay" class="external-link"><img src="https://www.r-pkg.org/badges/version/lay" alt="CRAN status"></a></li>
 <li><a href="https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml" class="external-link"><img src="https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>
 
