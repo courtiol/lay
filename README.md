@@ -5,12 +5,12 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 ## An R package for simple but efficient rowwise jobs
@@ -36,7 +36,14 @@ package fulfills the need… Time will tell.
 
 ### Installation
 
-You can install the development version of **{lay}** with:
+You can install the current CRAN version of **{lay}** with:
+
+``` r
+install.packages("lay")
+```
+
+Alternatively, you can install the development version of **{lay}**
+with:
 
 ``` r
 remotes::install_github("courtiol/lay")

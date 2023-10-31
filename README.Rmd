@@ -19,10 +19,10 @@ knitr::opts_chunk$set(
 # <img src="man/figures/logo.png" align="right" height="138" /> **{lay}**
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/lay)](https://CRAN.R-project.org/package=lay)
 [![R-CMD-check](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/courtiol/lay/actions/workflows/test-coverage.yaml)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 ## An R package for simple but efficient rowwise jobs
@@ -40,7 +40,14 @@ There is hardly any code behind `lay()` (it can be coded in 3 lines), so this pa
 
 ### Installation
 
-You can install the development version of **{lay}** with:
+
+You can install the current CRAN version of **{lay}** with:
+
+``` r
+install.packages("lay")
+```
+
+Alternatively, you can install the development version of **{lay}** with:
 
 ``` r
 remotes::install_github("courtiol/lay")
