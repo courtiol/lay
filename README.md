@@ -46,7 +46,7 @@ Alternatively, you can install the development version of **{lay}**
 using [**{remotes}**](https://remotes.r-lib.org/):
 
 ``` r
-remotes::install_github("courtiol/lay")
+remotes::install_github("courtiol/lay") ## requires to have installed {remotes}
 ```
 
 ### Motivation
